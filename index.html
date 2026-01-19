@@ -7,10 +7,10 @@
   <title>WishCraft — Birthday Wish Link + QR</title>
   <meta name="description" content="Create a premium birthday wish link with photo + themed QR. Host on GitHub Pages." />
 
-  <!-- Google Fonts (safe + reliable on GitHub Pages) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <link rel="icon" href="Logo_0.png" />
   <link rel="stylesheet" href="style.css" />
@@ -19,9 +19,12 @@
 <body>
   <div class="bgfx" aria-hidden="true"></div>
 
+  <!-- Toast popup -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <header class="topbar">
     <div class="brand">
-      <img class="logo" src="Logo_0.png" alt="WishCraft Logo" />
+      <img class="logo" src="Logo_0.png" alt="WishCraft Logo" onerror="this.style.display='none';" />
       <div class="brandText">
         <div class="brandName">WishCraft</div>
         <div class="brandTag">Create a premium birthday wish link + themed QR</div>
@@ -41,10 +44,10 @@
       <div class="grid">
         <div class="card">
           <label class="lbl" for="nameInput">Name</label>
-          <input id="nameInput" class="inp" maxlength="32" placeholder="e.g., ChatGPT" />
+          <input id="nameInput" class="inp" maxlength="32" placeholder="e.g., Ali" />
 
           <label class="lbl" for="msgInput">Message</label>
-          <textarea id="msgInput" class="inp ta" maxlength="160" placeholder="Write your birthday message…">Wish you a very happy birthday! 🎉</textarea>
+          <textarea id="msgInput" class="inp ta" maxlength="160" placeholder="Write your birthday message...">Wish you a very happy birthday! 🎉</textarea>
 
           <div class="row">
             <div class="col">
@@ -86,20 +89,26 @@
           </div>
 
           <div class="actions">
-            <button id="generateBtn" class="btn primary">Generate Link + QR</button>
+            <button id="generateBtn" class="btn primary" type="button">Generate Link + QR</button>
             <button id="resetBtn" class="btn ghost" type="button">Reset</button>
           </div>
 
           <div class="share">
             <label class="lbl">Share Link</label>
             <div class="shareRow">
-              <input id="shareLink" class="inp" readonly placeholder="Generate to get link…" />
-              <button id="copyBtn" class="btn">Copy</button>
+              <input id="shareLink" class="inp" readonly placeholder="Generate to get link..." />
+              <button id="copyBtn" class="btn" type="button">Copy</button>
             </div>
 
             <div class="qrBlock">
               <div class="qrTitle">Themed QR Code</div>
               <div id="qrWrap" class="qrWrap"></div>
+
+              <div class="qrActions">
+                <button id="downloadQrBtn" class="btn ghost" type="button" disabled>Download QR</button>
+                <button id="copyQrBtn" class="btn ghost" type="button" disabled>Copy QR</button>
+              </div>
+
               <div class="qrHint">Scan to open the wish. Works on all devices.</div>
             </div>
           </div>
@@ -116,7 +125,7 @@
           </details>
         </div>
 
-        <div class=" card live">
+        <div class="card live">
           <div class="liveHead">
             <div class="chip">Live Preview</div>
             <div class="mini">Open the link to see full animations.</div>
@@ -126,7 +135,7 @@
             <div class="stageGlow" aria-hidden="true"></div>
 
             <div class="badge">
-              <img class="badgeLogo" src="Logo_0.png" alt="logo" />
+              <img class="badgeLogo" src="Logo_0.png" alt="logo" onerror="this.style.display='none';" />
               <span>WishCraft</span>
             </div>
 
@@ -148,14 +157,7 @@
             </div>
           </div>
 
-          <div class="how">
-            <h3>How it works</h3>
-            <ol>
-              <li>Upload photo to Cloudinary → we get a <b>short CDN URL</b>.</li>
-              <li>We pack wish data into <code>#wish=</code> (small base64 JSON).</li>
-              <li>Link opens instantly on any device, and QR points to the same link.</li>
-            </ol>
-          </div>
+          <!-- REMOVED: How it works -->
         </div>
       </div>
     </section>
@@ -167,11 +169,11 @@
           <canvas id="confetti"></canvas>
 
           <div class="badge playerBadge">
-            <img class="badgeLogo" src="Logo_0.png" alt="logo" />
+            <img class="badgeLogo" src="Logo_0.png" alt="logo" onerror="this.style.display='none';" />
             <span>WishCraft</span>
           </div>
 
-          <div class="playerHero">
+          <div class="playerHero" id="playerHero">
             <div class="pTitle" id="pTitle">Happy Birthday</div>
             <div class="pName" id="pName">Friend</div>
             <div class="pMsg" id="pMsg">Wish you a very happy birthday! 🎉</div>
@@ -183,7 +185,7 @@
           </div>
 
           <div class="playerCta">
-            <button id="replayBtn" class="btn primary">Replay</button>
+            <button id="replayBtn" class="btn primary" type="button">Replay</button>
             <a id="makeNewBtn" class="btn ghost" href="./">Create yours</a>
           </div>
         </div>
