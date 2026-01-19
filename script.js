@@ -1,3 +1,4 @@
+// (only the file header omitted — full file replacing previous script.js)
 const CLOUDINARY_CLOUD_NAME = "danzponmi";
 const CLOUDINARY_UNSIGNED_PRESET = "wishcraft";
 
@@ -282,14 +283,22 @@ function renderPlayer(payload){
 
   const img = $("pPhoto");
   const fallback = document.querySelector(".playerPhoto .phFallback");
+  const photoContainer = document.querySelector(".playerPhoto");
+
   if(photo && img){
+    // show photo
     img.src = photo;
     img.style.display = "block";
     if(fallback) fallback.style.display = "none";
+    if(photoContainer) photoContainer.style.display = "";
+    if(stage) stage.classList.remove("no-photo");
   }else if(img){
+    // hide photo container entirely so layout collapses
     img.removeAttribute("src");
     img.style.display = "none";
     if(fallback) fallback.style.display = "block";
+    if(photoContainer) photoContainer.style.display = "none";
+    if(stage) stage.classList.add("no-photo");
   }
 
   document.title = `Happy Birthday, ${name}! — WishCraft`;
