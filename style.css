@@ -249,6 +249,20 @@ body{
 .pName{font-size:38px;font-weight:800;margin-top:8px;line-height:1.05}
 .pMsg{font-size:15px;color:var(--muted);margin-top:10px}
 
+/* When there's no photo — collapse space and enlarge text */
+.playerStage.no-photo .playerPhoto{ display:none !important; }
+.playerStage.no-photo .playerHero{ margin-top: clamp(28px, 8vw, 56px); }
+.playerStage.no-photo .pName{
+  font-size: clamp(40px, 9vw, 72px);
+  line-height: 1;
+}
+.playerStage.no-photo .pMsg{
+  font-size: clamp(16px, 3.2vw, 20px);
+  max-width: 92%;
+  margin-top: 12px;
+}
+
+/* Keep remaining player photo styles (but will be hidden when no-photo) */
 .playerStage .playerPhoto{
   width:min(260px, 78vw);
   aspect-ratio: 1 / 1;
