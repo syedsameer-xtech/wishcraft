@@ -1,224 +1,206 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Birthday Wish Studio ✨</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#161616" />
+  <title>WishCraft — Birthday Wish Link + QR</title>
+  <meta name="description" content="Create a premium birthday wish link with photo + themed QR. Host on GitHub Pages." />
+
+  <!-- Google Fonts (safe + reliable on GitHub Pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="Logo_0.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="bg" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="bgfx" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="Logo_0.png" alt="WishCraft Logo" />
+      <div class="brandText">
+        <div class="brandName">WishCraft</div>
+        <div class="brandTag">Create a premium birthday wish link + themed QR</div>
+      </div>
+    </div>
+    <a class="gh" href="https://github.com/syedsameer-xtech/wishcraft" target="_blank" rel="noreferrer">GitHub</a>
+  </header>
 
   <main class="wrap">
-    <section id="creator" class="card">
-      <header class="head">
-        <div class="brand">
-          <img src="logo.png" class="brandLogo" alt="Logo" onerror="this.style.display='none'" />
-          <div>
-            <h1>Birthday Wish Studio</h1>
-            <p class="sub">Choose a theme, template, font. Add photo. Generate a link.</p>
-          </div>
-        </div>
-        <div class="badge">LIVE</div>
-      </header>
+    <!-- BUILDER -->
+    <section id="builder" class="panel">
+      <div class="panelHead">
+        <h1>Create a Birthday Wish</h1>
+        <p>Fill details → upload photo → generate link + QR → share anywhere.</p>
+      </div>
 
-      <form id="wishForm" class="form" autocomplete="off">
-        <div class="row">
-          <label class="field">
-            <span>Name</span>
-            <input id="nameInput" type="text" maxlength="40" placeholder="e.g., Ayesha" required />
-          </label>
+      <div class="grid">
+        <div class="card">
+          <label class="lbl" for="nameInput">Name</label>
+          <input id="nameInput" class="inp" maxlength="32" placeholder="e.g., ChatGPT" />
 
-          <label class="field">
-            <span>Theme</span>
-            <select id="themeInput">
-              <option value="sagewine">Sage & Wine (#9e9a8d / #80011f)</option>
-              <option value="goldblack">Gold & Noir (#b38f6f / #161616)</option>
-              <option value="leather">Leather & Oak (#301c1b / #3f2a0d)</option>
-              <option value="roseice" selected>Rose & Ice (#64303d / #c3dbe7)</option>
+          <label class="lbl" for="msgInput">Message</label>
+          <textarea id="msgInput" class="inp ta" maxlength="160" placeholder="Write your birthday message…">Wish you a very happy birthday! 🎉</textarea>
 
-              <option value="mintnavy">Mint & Navy (#c3fdb8 / #1d2545)</option>
-              <option value="ambercream">Amber & Cream (#c14a09 / #ffffc5)</option>
-              <option value="blushazure">Blush & Azure (#fff0f5 / #007fff)</option>
-              <option value="tealgold">Teal & Gold (#00555a / #ffca4b)</option>
-
-              <option value="sunsteel">Sun & Steel (#F8DE7E / #39393F)</option>
-              <option value="royalice">Royal & Ice (#26538D / #F0FFFF)</option>
-              <option value="ivorymaroon">Ivory & Maroon (#DAD4B6 / #5C0120)</option>
-              <option value="forestlime">Forest & Lime (#05472A / #DFEF87)</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="row">
-          <label class="field">
-            <span>Template</span>
-            <select id="templateInput">
-              <option value="t1">Template 1 — Luxe Glow</option>
-              <option value="t2">Template 2 — Spotlight</option>
-              <option value="t3">Template 3 — Magazine</option>
-              <option value="t4">Template 4 — Neon Party</option>
-              <option value="t5">Template 5 — Polaroid</option>
-              <option value="t6">Template 6 — Glass Tilt</option>
-              <option value="t7">Template 7 — Minimal Pro</option>
-              <option value="t8">Template 8 — Vintage Postcard</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Font</span>
-            <select id="fontInput">
-              <option value="auto" selected>Auto (by theme)</option>
-
-              <option value="displayBold">Display Bold</option>
-              <option value="serifLuxury">Luxury Serif</option>
-              <option value="modernSans">Modern Sans</option>
-              <option value="cinematic">Cinematic</option>
-              <option value="grotesk">Grotesk</option>
-              <option value="tech">Tech Mono</option>
-              <option value="street">Street</option>
-              <option value="script">Script</option>
-
-              <option value="eightOne">Eight One</option>
-              <option value="caviarDreams">Caviar Dreams</option>
-              <option value="coolvetika">Coolvetika</option>
-              <option value="okaluera">Okaluera</option>
-              <option value="walkway">Walkway</option>
-
-              <option value="custom">Custom (your fonts)</option>
-            </select>
-          </label>
-        </div>
-
-        <label class="field">
-          <span>Message (optional)</span>
-          <textarea id="msgInput" rows="4" maxlength="400" placeholder="Write something sweet…"></textarea>
-        </label>
-
-        <label class="upload">
-          <input id="photoInput" type="file" accept="image/*" />
-          <div class="uploadUI">
-            <div class="uploadIcon">📸</div>
-            <div class="uploadText">
-              <div class="uploadTitle">Upload photo (optional)</div>
-              <div id="fileHint" class="uploadHint">PNG/JPG/WEBP • compressed for sharing</div>
+          <div class="row">
+            <div class="col">
+              <label class="lbl" for="themeSelect">Theme</label>
+              <select id="themeSelect" class="inp sel"></select>
             </div>
-            <div class="uploadBtn">Choose</div>
-          </div>
-        </label>
-
-        <label class="tc">
-          <input id="agreeTc" type="checkbox" required />
-          <span>I agree to the <a href="#terms">Terms & Conditions</a>.</span>
-        </label>
-
-        <div class="btnRow">
-          <button class="btn primary" type="submit">Generate Link</button>
-          <button id="resetBtn" class="btn ghost" type="button">Reset</button>
-        </div>
-
-        <div id="warn" class="warn hidden"></div>
-      </form>
-
-      <section class="preview">
-        <div class="previewHead">
-          <span class="pill">Preview</span>
-          <span class="pill subtle" id="previewMeta">—</span>
-        </div>
-
-        <div class="stagePreview">
-          <div class="wishCard" id="wishCardPreview" data-template="t1">
-            <div class="fx fx-glow" aria-hidden="true"></div>
-            <div class="fx fx-sparkle" aria-hidden="true"></div>
-            <div class="fx fx-lines" aria-hidden="true"></div>
-
-            <div class="topBar">
-              <img src="logo.png" class="miniLogo" alt="Logo" onerror="this.style.display='none'" />
-              <span class="miniTag">Birthday Wish</span>
-            </div>
-
-            <div class="avatar" id="previewAvatar"><span class="avatarEmoji">🎂</span></div>
-            <h2 class="title">Happy Birthday, <span id="previewName">Friend</span>!</h2>
-            <p class="message" id="previewMsg"></p>
-
-            <div class="chips">
-              <span class="chip">✨ premium</span>
-              <span class="chip">🎉 shareable</span>
-              <span class="chip" id="chipTemplate">🪄 t1</span>
+            <div class="col">
+              <label class="lbl" for="templateSelect">Template</label>
+              <select id="templateSelect" class="inp sel"></select>
             </div>
           </div>
+
+          <div class="row">
+            <div class="col">
+              <label class="lbl" for="fontSelect">Font Style</label>
+              <select id="fontSelect" class="inp sel"></select>
+            </div>
+            <div class="col">
+              <label class="lbl" for="accentToggle">Effects</label>
+              <select id="accentToggle" class="inp sel">
+                <option value="auto">Auto</option>
+                <option value="glow">Glow</option>
+                <option value="sparkle">Sparkle</option>
+                <option value="neon">Neon</option>
+                <option value="glass">Glass</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="upload">
+            <label class="lbl">Photo (Cloudinary)</label>
+            <input id="photoInput" class="file" type="file" accept="image/*" />
+            <div class="hint">Tip: upload under 4MB for fast sharing.</div>
+
+            <div class="preview">
+              <img id="photoPreview" alt="Photo preview" />
+              <div id="uploadState" class="uploadState">No photo uploaded</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="generateBtn" class="btn primary">Generate Link + QR</button>
+            <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+          </div>
+
+          <div class="share">
+            <label class="lbl">Share Link</label>
+            <div class="shareRow">
+              <input id="shareLink" class="inp" readonly placeholder="Generate to get link…" />
+              <button id="copyBtn" class="btn">Copy</button>
+            </div>
+
+            <div class="qrBlock">
+              <div class="qrTitle">Themed QR Code</div>
+              <div id="qrWrap" class="qrWrap"></div>
+              <div class="qrHint">Scan to open the wish. Works on all devices.</div>
+            </div>
+          </div>
+
+          <details class="tc">
+            <summary>Terms & Conditions</summary>
+            <ul>
+              <li>Do not upload illegal, harmful, adult, or copyrighted content without permission.</li>
+              <li>Uploaded images are stored on Cloudinary under your account (cloud: <b>danzponmi</b>).</li>
+              <li>This project is a static web app hosted on GitHub Pages; no personal data is stored by us on a server.</li>
+              <li>You are responsible for the links you generate and share.</li>
+              <li>“Made with ChatGPT” is a credit line and not an official endorsement.</li>
+            </ul>
+          </details>
         </div>
-      </section>
 
-      <section id="linkBox" class="linkBox hidden">
-        <div class="linkHead">
-          <div>
-            <h3>Share link ready</h3>
-            <p class="small">Send it — opening the link plays the wish.</p>
-          </div>
-          <div class="linkActions">
-            <button id="shareBtn" class="btn primary" type="button">Share</button>
-            <button id="copyBtn" class="btn ghost" type="button">Copy</button>
-          </div>
-        </div>
-
-        <input id="shareLink" class="shareInput" type="text" readonly />
-        <div id="copyStatus" class="small status"></div>
-      </section>
-
-      <details id="terms" class="terms">
-        <summary>Terms & Conditions</summary>
-        <div class="termsBody">
-          <p><strong>Effective Date:</strong> <span id="tcDate"></span></p>
-          <ul>
-            <li><strong>Permission:</strong> You own or have rights to the text/photo you use.</li>
-            <li><strong>No harmful content:</strong> Don’t use illegal, hateful, abusive, or privacy-violating content.</li>
-            <li><strong>Privacy:</strong> Anyone with the link can view it. Don’t share sensitive personal data.</li>
-            <li><strong>Static site:</strong> GitHub Pages doesn’t store uploads—data is embedded in the link.</li>
-            <li><strong>Availability:</strong> Provided “as is”. You’re responsible for link sharing.</li>
-          </ul>
-        </div>
-      </details>
-    </section>
-
-    <!-- VIEWER -->
-    <section id="viewer" class="card hidden">
-      <canvas id="confetti"></canvas>
-
-      <div class="viewerWrap">
-        <div class="wishCard big" id="wishCard" data-template="t1">
-          <div class="fx fx-glow" aria-hidden="true"></div>
-          <div class="fx fx-sparkle" aria-hidden="true"></div>
-          <div class="fx fx-lines" aria-hidden="true"></div>
-
-          <div class="topBar bigTop">
-            <img src="logo.png" class="miniLogo bigLogo" alt="Logo" onerror="this.style.display='none'" />
-            <span class="miniTag">Birthday Wish</span>
+        <div class="card live">
+          <div class="liveHead">
+            <div class="chip">Live Preview</div>
+            <div class="mini">Open the link to see full animations.</div>
           </div>
 
-          <div class="avatar bigAvatar" id="wishAvatar"><span class="avatarEmoji">🎉</span></div>
-          <h2 class="title bigTitle">Happy Birthday, <span id="wishName">Friend</span>!</h2>
-          <p id="wishMsg" class="message bigMsg"></p>
+          <div id="liveStage" class="stage t1">
+            <div class="stageGlow" aria-hidden="true"></div>
 
-          <div id="photoFrame" class="photoFrame hidden">
-            <img id="wishPhoto" alt="Birthday photo" />
+            <div class="badge">
+              <img class="badgeLogo" src="Logo_0.png" alt="logo" />
+              <span>WishCraft</span>
+            </div>
+
+            <div class="hero">
+              <div class="hTitle" id="liveTitle">Happy Birthday</div>
+              <div class="hName" id="liveName">Friend</div>
+              <div class="hMsg" id="liveMsg">Wish you a very happy birthday! 🎉</div>
+            </div>
+
+            <div class="photoFrame">
+              <img id="livePhoto" alt="photo" />
+              <div class="phFallback">Your Photo</div>
+            </div>
+
+            <div class="decor">
+              <div class="orb o1"></div>
+              <div class="orb o2"></div>
+              <div class="orb o3"></div>
+            </div>
           </div>
 
-          <div class="btnRow center">
-            <button id="replayBtn" class="btn primary" type="button">Replay 🎊</button>
-            <button id="makeNewBtn" class="btn ghost" type="button">Create yours</button>
+          <div class="how">
+            <h3>How it works</h3>
+            <ol>
+              <li>Upload photo to Cloudinary → we get a <b>short CDN URL</b>.</li>
+              <li>We pack wish data into <code>#wish=</code> (small base64 JSON).</li>
+              <li>Link opens instantly on any device, and QR points to the same link.</li>
+            </ol>
           </div>
         </div>
       </div>
     </section>
 
-    <footer class="foot">
-      <span>Made with ChatGPT</span>
-      <span class="heart" aria-hidden="true">♥</span>
-      <span class="footNote">by Syed Sameer</span>
-    </footer>
+    <!-- PLAYER -->
+    <section id="player" class="panel hidden">
+      <div class="playerWrap">
+        <div class="playerStage" id="playerStage">
+          <canvas id="confetti"></canvas>
+
+          <div class="badge playerBadge">
+            <img class="badgeLogo" src="Logo_0.png" alt="logo" />
+            <span>WishCraft</span>
+          </div>
+
+          <div class="playerHero">
+            <div class="pTitle" id="pTitle">Happy Birthday</div>
+            <div class="pName" id="pName">Friend</div>
+            <div class="pMsg" id="pMsg">Wish you a very happy birthday! 🎉</div>
+          </div>
+
+          <div class="playerPhoto">
+            <img id="pPhoto" alt="photo" />
+            <div class="phFallback">Your Photo</div>
+          </div>
+
+          <div class="playerCta">
+            <button id="replayBtn" class="btn primary">Replay</button>
+            <a id="makeNewBtn" class="btn ghost" href="./">Create yours</a>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="footLeft">
+            <span>Made with ChatGPT</span>
+            <span class="heart" aria-hidden="true">♥</span>
+            <span>by Syed Sameer</span>
+          </div>
+          <div class="footRight">
+            <a href="https://github.com/syedsameer-xtech/wishcraft" target="_blank" rel="noreferrer">Source</a>
+          </div>
+        </footer>
+      </div>
+    </section>
   </main>
 
   <script src="script.js"></script>
