@@ -1,484 +1,242 @@
-// script.js
-// ================================
-// WishCraft (GitHub Pages Ready)
-// - Cloudinary unsigned upload (preset: wishcraft)
-// - Short share URL (photo uses CDN URL, not base64)
-// - Themed QR (uses qrserver API for reliability)
-// - Player mode: opens wish from #wish=...
-// ================================
-//
-// Fixes applied:
-// - Robust Unicode-safe base64 encode/decode functions
-// - encodeURIComponent() the base64 payload when building the hash
-// - decodeURIComponent() before decoding when reading the hash
-// - Avoid errors if canvas/context are unavailable
-// - Small defensive DOM checks
-// ================================
-
-// Cloudinary
-const CLOUDINARY_CLOUD_NAME = "danzponmi";
-const CLOUDINARY_UNSIGNED_PRESET = "wishcraft";
-
-let uploadedPhotoUrl = "";
-
-// Theme list (all your palettes + few premium additions)
-const THEMES = [
-  { id:"sandwine", name:"#9e9a8d + #80011f", a:"#9e9a8d", b:"#80011f", qrFg:"ffffff", qrBg:"111111" },
-  { id:"bronzenoir", name:"#b38f6f + #161616", a:"#b38f6f", b:"#161616", qrFg:"111111", qrBg:"ffffff" },
-  { id:"earthoak", name:"#301c1b + #3f2a0d", a:"#301c1b", b:"#3f2a0d", qrFg:"ffffff", qrBg:"111111" },
-  { id:"roseice", name:"#64303d + #c3dbe7", a:"#64303d", b:"#c3dbe7", qrFg:"111111", qrBg:"ffffff" },
-
-  { id:"mintnavy", name:"#c3fdb8 + #1d2545", a:"#c3fdb8", b:"#1d2545", qrFg:"1d2545", qrBg:"c3fdb8" },
-  { id:"burntcream", name:"#c14a09 + #ffffc5", a:"#c14a09", b:"#ffffc5", qrFg:"c14a09", qrBg:"ffffc5" },
-  { id:"pinkazure", name:"#fff0f5 + #007fff", a:"#fff0f5", b:"#007fff", qrFg:"007fff", qrBg:"fff0f5" },
-  { id:"tealgold", name:"#00555a + #ffca4b", a:"#00555a", b:"#ffca4b", qrFg:"00555a", qrBg:"ffca4b" },
-
-  { id:"buttergraphite", name:"#F8DE7E + #39393F", a:"#F8DE7E", b:"#39393F", qrFg:"39393F", qrBg:"F8DE7E" },
-  { id:"bluemist", name:"#26538D + #F0FFFF", a:"#26538D", b:"#F0FFFF", qrFg:"26538D", qrBg:"F0FFFF" },
-  { id:"parchmentwine", name:"#DAD4B6 + #5C0120", a:"#DAD4B6", b:"#5C0120", qrFg:"5C0120", qrBg:"DAD4B6" },
-  { id:"forestlemon", name:"#05472A + #DFEF87", a:"#05472A", b:"#DFEF87", qrFg:"05472A", qrBg:"DFEF87" },
-
-  // extra premium themes
-  { id:"midnightviolet", name:"Midnight Violet", a:"#0b0b14", b:"#7b2cff", qrFg:"ffffff", qrBg:"0b0b14" },
-  { id:"auroracoral", name:"Aurora Coral", a:"#0a2239", b:"#ff6b6b", qrFg:"0a2239", qrBg:"fff0f5" }
-];
-
-// Fonts (real fonts loaded via Google Fonts + a few system)
-const FONTS = [
-  { id:"auto", name:"Auto (by theme)", css:"Poppins, system-ui, sans-serif" },
-  { id:"poppins", name:"Poppins (Modern)", css:"Poppins, system-ui, sans-serif" },
-  { id:"montserrat", name:"Montserrat (Clean)", css:"Montserrat, system-ui, sans-serif" },
-  { id:"raleway", name:"Raleway (Elegant)", css:"Raleway, system-ui, sans-serif" },
-  { id:"playfair", name:"Playfair Display (Luxury)", css:"'Playfair Display', serif" },
-  { id:"cinzel", name:"Cinzel (Royal)", css:"Cinzel, serif" },
-  { id:"pacifico", name:"Pacifico (Handwritten)", css:"Pacifico, cursive" }
-];
-
-// Templates
-const TEMPLATES = [
-  { id:"t1", name:"Premium Glow" },
-  { id:"t2", name:"Centered Minimal" },
-  { id:"t3", name:"Split Photo" },
-  { id:"t4", name:"Bold Poster" }
-];
-
-// ============ Helpers ============
-const $ = (id) => document.getElementById(id);
-
-function safeText(s, max=160){
-  return String(s || "").replace(/\s+/g," ").trim().slice(0,max);
+:root{
+  --a:#b38f6f;
+  --b:#161616;
+  --muted:rgba(255,255,255,.70);
+  --muted2:rgba(255,255,255,.55);
+  --card:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.10);
+  --shadow:0 18px 60px rgba(0,0,0,.55);
+  --radius:14px;
+  --max-width:1120px;
 }
 
-// Unicode-safe base64 helpers
-// Source pattern: encodeURIComponent -> percent sequences -> chars -> btoa
-function b64EncodeUnicode(str){
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-    return String.fromCharCode('0x' + p1);
-  }));
-}
-function b64DecodeUnicode(b64){
-  const str = atob(b64);
-  // convert binary string to percent-encoded string, then decode
-  const percentEncoded = Array.prototype.map.call(str, function(c) {
-    const code = c.charCodeAt(0).toString(16).toUpperCase();
-    return '%' + ('00' + code).slice(-2);
-  }).join('');
-  return decodeURIComponent(percentEncoded);
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Poppins, system-ui, sans-serif;
+  background:linear-gradient(180deg,#080808 0%,#0f0f0f 100%);
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
 }
 
-function toB64(obj){
-  return b64EncodeUnicode(JSON.stringify(obj));
-}
-function fromB64(b64){
-  return JSON.parse(b64DecodeUnicode(b64));
-}
-
-function setCSSVars(themeId){
-  const t = THEMES.find(x => x.id === themeId) || THEMES[1];
-  document.documentElement.style.setProperty("--a", t.a);
-  document.documentElement.style.setProperty("--b", t.b);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.b);
-  return t;
+.bgfx{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(900px 500px at 10% 20%, rgba(123,44,255,0.08), transparent 60%),
+    radial-gradient(800px 400px at 90% 80%, rgba(0,124,255,0.06), transparent 60%);
+  pointer-events:none;
+  z-index:0;
 }
 
-function applyEffect(effect){
-  document.body.classList.remove("fx-glow","fx-sparkle","fx-neon","fx-glass");
-  if(effect && effect !== "auto"){
-    document.body.classList.add("fx-" + effect);
-  }
+/* Toast popup */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  font-size:13px;
+  z-index:999;
+  transition:opacity .18s ease, transform .18s ease;
+  pointer-events:none;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 
-function applyFont(fontId, themeId){
-  const font = FONTS.find(f => f.id === fontId) || FONTS[0];
-  if(fontId === "auto"){
-    // theme-based defaults
-    const darkish = (THEMES.find(t=>t.id===themeId)?.b || "#000").toLowerCase();
-    const isDark = isColorDark(darkish);
-    document.body.style.fontFamily = isDark ? "Poppins, system-ui, sans-serif" : "Montserrat, system-ui, sans-serif";
-    return;
-  }
-  document.body.style.fontFamily = font.css;
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:18px 20px;
+  max-width:var(--max-width);
+  margin:18px auto;
+  z-index:5;
+  position:relative;
+}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:48px;height:48px;border-radius:10px;object-fit:cover}
+.brandName{font-weight:700;font-size:18px}
+.brandTag{font-size:12px;color:var(--muted2)}
+.gh{
+  color:#fff;
+  text-decoration:none;
+  background:transparent;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.08);
+  font-size:13px;
 }
 
-function isColorDark(hex){
-  const h = hex.replace("#","").trim();
-  const r = parseInt(h.substring(0,2),16);
-  const g = parseInt(h.substring(2,4),16);
-  const b = parseInt(h.substring(4,6),16);
-  // perceived luminance
-  const L = (0.2126*r + 0.7152*g + 0.0722*b)/255;
-  return L < 0.45;
+.wrap{max-width:var(--max-width);margin:10px auto;padding:18px;position:relative;z-index:2}
+.panel{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:18px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.08);
+}
+.panelHead h1{margin:0;font-size:22px}
+.panelHead p{margin:6px 0 12px;color:var(--muted);font-size:14px}
+
+.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+@media (max-width:980px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--card);padding:16px;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+
+.lbl{display:block;font-size:13px;color:var(--muted2);margin-top:10px}
+.inp{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.03);
+  color:#fff;
+}
+.inp:focus{outline:none;box-shadow:0 6px 20px rgba(0,0,0,0.55)}
+.ta{min-height:86px;resize:vertical}
+.row{display:flex;gap:8px;margin-top:8px}
+.col{flex:1}
+
+.upload{margin-top:12px}
+.file{display:block;width:100%;padding:8px}
+.hint{font-size:12px;color:var(--muted2);margin-top:6px}
+.preview{display:flex;align-items:center;gap:12px;margin-top:10px}
+.preview img{width:84px;height:84px;border-radius:10px;object-fit:cover;display:none}
+.uploadState{font-size:13px;color:var(--muted2)}
+
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{
+  border:0;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,0.10);
+}
+.btn.primary{
+  background:linear-gradient(90deg,var(--a),var(--b));
+  box-shadow:0 10px 26px rgba(0,0,0,0.45);
+}
+.btn.ghost{background:transparent}
+.btn:active{transform:translateY(1px)}
+
+.share{margin-top:14px}
+.shareRow{display:flex;gap:8px;align-items:center}
+.shareRow .inp{flex:1}
+
+.qrBlock{margin-top:12px;text-align:center}
+.qrWrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px;
+  background:rgba(0,0,0,0.25);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.qrWrap img{max-width:100%;height:auto;border-radius:10px;background:#fff}
+.qrTitle{font-weight:600;margin-bottom:6px}
+.qrHint{font-size:12px;color:var(--muted2);margin-top:6px}
+
+.qrActions{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+  flex-wrap:wrap;
 }
 
-function renderQR(url, themeId){
-  const qrWrap = $("qrWrap");
-  if(!qrWrap) return;
+.tc summary{cursor:pointer;color:var(--muted2);font-size:13px}
+.tc ul{margin:8px 0 0 18px;color:var(--muted2);font-size:13px}
 
-  const t = THEMES.find(x => x.id === themeId) || THEMES[1];
-  // ensure no leading '#'
-  const fg = (t.qrFg || "").replace("#","");
-  const bg = (t.qrBg || "").replace("#","");
+.liveHead{display:flex;justify-content:space-between;align-items:center}
+.chip{background:rgba(255,255,255,0.06);padding:6px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,0.10)}
+.mini{font-size:12px;color:var(--muted2)}
 
-  const img = document.createElement("img");
-  img.alt = "QR Code";
-  img.decoding = "async";
-  img.src =
-    "https://api.qrserver.com/v1/create-qr-code/?" +
-    new URLSearchParams({
-      size: "420x420",
-      data: url,
-      color: fg,
-      bgcolor: bg,
-      margin: "12",
-      qzone: "2",
-      format: "png"
-    }).toString();
-
-  qrWrap.innerHTML = "";
-  qrWrap.appendChild(img);
+.stage{
+  position:relative;
+  border-radius:14px;
+  padding:18px;
+  margin-top:12px;
+  min-height:280px;
+  overflow:hidden;
+  background:
+    radial-gradient(700px 300px at 25% 20%, rgba(255,255,255,0.05), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,0.08);
 }
+.stageGlow{position:absolute;inset:0;pointer-events:none;filter:blur(38px);opacity:0.4}
+.badge{display:flex;gap:8px;align-items:center;position:absolute;top:12px;left:12px}
+.badgeLogo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.hero{text-align:center;padding-top:28px}
+.hTitle{font-size:14px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px}
+.hName{font-size:34px;font-weight:700;margin-top:6px}
+.hMsg{font-size:15px;color:var(--muted);margin-top:6px;max-width:84%}
 
-// Simple live preview
-function updateLive(){
-  const name = safeText($("nameInput")?.value || "Friend", 32);
-  const msg  = safeText($("msgInput")?.value || "Wish you a very happy birthday! 🎉", 160);
-  const themeId = $("themeSelect")?.value || "bronzenoir";
-  const fontId = $("fontSelect")?.value || "auto";
-  const effect = $("accentToggle")?.value || "auto";
-  const template = $("templateSelect")?.value || "t1";
-
-  setCSSVars(themeId);
-  applyFont(fontId, themeId);
-  applyEffect(effect);
-
-  if($("liveName")) $("liveName").textContent = name;
-  if($("liveMsg")) $("liveMsg").textContent = msg;
-  const liveStage = $("liveStage");
-  if(liveStage) liveStage.className = "stage " + template;
-
-  // photo
-  const livePhoto = $("livePhoto");
-  const phFallback = document.querySelector(".photoFrame .phFallback");
-  if(uploadedPhotoUrl && livePhoto){
-    livePhoto.src = uploadedPhotoUrl;
-    livePhoto.style.display = "block";
-    if(phFallback) phFallback.style.display = "none";
-  } else if(livePhoto){
-    livePhoto.removeAttribute("src");
-    livePhoto.style.display = "none";
-    if(phFallback) phFallback.style.display = "block";
-  }
+.photoFrame{
+  width:160px;height:160px;border-radius:14px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  display:flex;align-items:center;justify-content:center;
+  margin-top:14px;overflow:hidden;position:relative;
+  border:1px solid rgba(255,255,255,0.08);
 }
+.photoFrame img{width:100%;height:100%;object-fit:cover;display:none}
+.phFallback{color:var(--muted2);font-size:13px}
 
-// ============ Cloudinary Upload ============
-async function uploadToCloudinary(file){
-  const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+.decor .orb{position:absolute;border-radius:50%;opacity:0.10}
+.decor .o1{width:220px;height:220px;left:-40px;top:-40px;background:var(--a)}
+.decor .o2{width:140px;height:140px;right:-30px;top:20px;background:var(--b)}
+.decor .o3{width:100px;height:100px;left:50%;transform:translateX(-50%);bottom:-30px;background:#fff}
 
-  const form = new FormData();
-  form.append("file", file);
-  form.append("upload_preset", CLOUDINARY_UNSIGNED_PRESET);
-  form.append("folder", "wishcraft");
-
-  const res = await fetch(endpoint, { method:"POST", body: form });
-  if(!res.ok){
-    const err = await res.text().catch(()=> "");
-    throw new Error("Cloudinary upload failed: " + err);
-  }
-  return await res.json();
+.hidden{display:none}
+.playerWrap{max-width:760px;margin:0 auto}
+.playerStage{
+  position:relative;
+  border-radius:14px;
+  padding:22px;
+  min-height:420px;
+  background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.18));
+  border:1px solid rgba(255,255,255,0.08);
 }
-
-// ============ Confetti (lightweight canvas) ============
-function confettiBurst(durationMs = 2000){
-  const c = $("confetti");
-  if(!c) return;
-  const ctx = c.getContext && c.getContext("2d");
-  if(!ctx) return;
-
-  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-
-  const resize = () => {
-    c.width = Math.floor(c.clientWidth * dpr);
-    c.height = Math.floor(c.clientHeight * dpr);
-  };
-  resize();
-
-  const t0 = performance.now();
-  const pieces = Array.from({length: 160}).map(() => ({
-    x: Math.random()*c.width,
-    y: -Math.random()*c.height*0.3,
-    vx: (Math.random()-0.5)*2.2*dpr,
-    vy: (Math.random()*2.4+1.2)*dpr,
-    r: (Math.random()*6+2)*dpr,
-    a: Math.random()*Math.PI*2,
-    va: (Math.random()-0.5)*0.18,
-    g: (Math.random()*0.06+0.03)*dpr
-  }));
-
-  function frame(t){
-    const elapsed = t - t0;
-    ctx.clearRect(0,0,c.width,c.height);
-
-    // minimal classy white confetti (keeps visuals consistent)
-    ctx.fillStyle = "rgba(255,255,255,.85)";
-
-    for(const p of pieces){
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.g;
-      p.a += p.va;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.a);
-      ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
-      ctx.restore();
-    }
-
-    if(elapsed < durationMs){
-      requestAnimationFrame(frame);
-    } else {
-      ctx.clearRect(0,0,c.width,c.height);
-    }
-  }
-  requestAnimationFrame(frame);
-
-  window.addEventListener("resize", resize, { once:true });
+.playerStage .playerPhoto{
+  width:220px;height:220px;border-radius:14px;
+  margin:18px auto;overflow:hidden;
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,0.08);
 }
+.playerStage img{max-width:100%;height:100%;object-fit:cover;display:none}
 
-// ============ App Mode Switching ============
-function showBuilder(){
-  $("builder")?.classList.remove("hidden");
-  $("player")?.classList.add("hidden");
+#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px;margin-top:14px;color:var(--muted2);font-size:13px
 }
-function showPlayer(){
-  $("builder")?.classList.add("hidden");
-  $("player")?.classList.remove("hidden");
-}
+.footer a{color:inherit;text-decoration:underline}
 
-// ============ Player render ============
-function renderPlayer(payload){
-  const name = safeText(payload.name || "Friend", 32);
-  const msg = safeText(payload.msg || "Wish you a very happy birthday! 🎉", 160);
-  const themeId = payload.theme || "bronzenoir";
-  const fontId = payload.font || "auto";
-  const effect = payload.effect || "auto";
-  const template = payload.template || "t1";
-  const photo = payload.photo || "";
+.fx-glow .hName,.fx-glow .pName{text-shadow:0 6px 18px rgba(0,0,0,0.6)}
+.fx-neon .hName,.fx-neon .pName{filter:drop-shadow(0 0 8px rgba(123,44,255,0.35))}
+.fx-sparkle .orb{opacity:0.16}
+.fx-glass .photoFrame{backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.10)}
 
-  const t = setCSSVars(themeId);
-  applyFont(fontId, themeId);
-  applyEffect(effect);
-
-  if($("pName")) $("pName").textContent = name;
-  if($("pMsg")) $("pMsg").textContent = msg;
-  const playerStage = $("playerStage");
-  if(playerStage) playerStage.className = "playerStage " + template;
-
-  const img = $("pPhoto");
-  const fallback = document.querySelector(".playerPhoto .phFallback");
-  if(photo && img){
-    img.src = photo;
-    img.style.display = "block";
-    if(fallback) fallback.style.display = "none";
-  } else if(img){
-    img.removeAttribute("src");
-    img.style.display = "none";
-    if(fallback) fallback.style.display = "block";
-  }
-
-  // burst confetti
-  confettiBurst(2400);
-
-  // Update page title
-  document.title = `Happy Birthday, ${name}! — WishCraft`;
-
-  // Theme color meta
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.b);
-}
-
-// ============ Init builder selects ============
-function fillSelect(el, items, placeholder){
-  if(!el) return;
-  el.innerHTML = "";
-  if(placeholder){
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = placeholder;
-    el.appendChild(opt);
-  }
-  for(const it of items){
-    const opt = document.createElement("option");
-    opt.value = it.id;
-    opt.textContent = it.name;
-    el.appendChild(opt);
-  }
-}
-
-// ============ Events ============
-function wireEvents(){
-  $("nameInput")?.addEventListener("input", updateLive);
-  $("msgInput")?.addEventListener("input", updateLive);
-  $("themeSelect")?.addEventListener("change", updateLive);
-  $("templateSelect")?.addEventListener("change", updateLive);
-  $("fontSelect")?.addEventListener("change", updateLive);
-  $("accentToggle")?.addEventListener("change", updateLive);
-
-  $("resetBtn")?.addEventListener("click", () => {
-    if($("nameInput")) $("nameInput").value = "";
-    if($("msgInput")) $("msgInput").value = "Wish you a very happy birthday! 🎉";
-    if($("themeSelect")) $("themeSelect").value = "bronzenoir";
-    if($("templateSelect")) $("templateSelect").value = "t1";
-    if($("fontSelect")) $("fontSelect").value = "auto";
-    if($("accentToggle")) $("accentToggle").value = "auto";
-    uploadedPhotoUrl = "";
-
-    const prev = $("photoPreview");
-    if(prev){
-      prev.removeAttribute("src");
-      prev.style.display = "none";
-    }
-    const uploadState = $("uploadState");
-    if(uploadState) uploadState.textContent = "No photo uploaded";
-
-    if($("shareLink")) $("shareLink").value = "";
-    const qrWrap = $("qrWrap");
-    if(qrWrap) qrWrap.innerHTML = "";
-    updateLive();
-  });
-
-  $("copyBtn")?.addEventListener("click", async () => {
-    const val = ($("shareLink")?.value || "").trim();
-    if(!val) return alert("Generate a link first.");
-    try{
-      await navigator.clipboard.writeText(val);
-      const cb = $("copyBtn");
-      if(cb) cb.textContent = "Copied!";
-      setTimeout(()=> { if(cb) cb.textContent = "Copy"; }, 900);
-    }catch{
-      alert("Copy failed. Select link and copy manually.");
-    }
-  });
-
-  $("photoInput")?.addEventListener("change", async (e) => {
-    const file = e.target.files?.[0];
-    if(!file) return;
-
-    if(file.size > 4 * 1024 * 1024){
-      alert("Please upload an image under 4MB.");
-      e.target.value = "";
-      return;
-    }
-
-    const uploadState = $("uploadState");
-    if(uploadState) uploadState.textContent = "Uploading to Cloudinary…";
-    try{
-      const data = await uploadToCloudinary(file);
-      uploadedPhotoUrl = data.secure_url;
-
-      // show preview
-      const prev = $("photoPreview");
-      if(prev){
-        prev.src = uploadedPhotoUrl;
-        prev.style.display = "block";
-      }
-
-      if(uploadState) uploadState.textContent = "Uploaded ✓ (Cloudinary CDN)";
-      updateLive();
-    }catch(err){
-      console.error(err);
-      if(uploadState) uploadState.textContent = "Upload failed";
-      alert("Upload failed. Please try again.");
-    }
-  });
-
-  $("generateBtn")?.addEventListener("click", () => {
-    const name = safeText($("nameInput")?.value || "Friend", 32);
-    const msg  = safeText($("msgInput")?.value || "Wish you a very happy birthday! 🎉", 160);
-    const themeId = $("themeSelect")?.value || "bronzenoir";
-    const template = $("templateSelect")?.value || "t1";
-    const fontId = $("fontSelect")?.value || "auto";
-    const effect = $("accentToggle")?.value || "auto";
-
-    // Short payload: photo is CDN URL, not base64
-    const payload = {
-      v: 6,
-      name,
-      msg,
-      theme: themeId,
-      template,
-      font: fontId,
-      effect,
-      photo: uploadedPhotoUrl || ""
-    };
-
-    // Encode payload safely for inclusion in URL hash
-    const b64 = toB64(payload);
-    const hash = "#wish=" + encodeURIComponent(b64);
-
-    // Works on GitHub Pages
-    const shareUrl = location.origin + location.pathname + hash;
-
-    if($("shareLink")) $("shareLink").value = shareUrl;
-    renderQR(shareUrl, themeId);
-  });
-
-  $("replayBtn")?.addEventListener("click", () => {
-    confettiBurst(2200);
-  });
-}
-
-// ============ Boot from URL ============
-function boot(){
-  // Fill selects
-  fillSelect($("themeSelect"), THEMES);
-  fillSelect($("templateSelect"), TEMPLATES);
-  fillSelect($("fontSelect"), FONTS);
-
-  // Defaults
-  if($("themeSelect")) $("themeSelect").value = "bronzenoir";
-  if($("templateSelect")) $("templateSelect").value = "t1";
-  if($("fontSelect")) $("fontSelect").value = "auto";
-  if($("accentToggle")) $("accentToggle").value = "auto";
-
-  // If opened from wish link
-  const match = location.hash.match(/wish=([^&]+)/);
-  if(match){
-    try{
-      // decodeURIComponent because we encode when generating
-      const decoded = decodeURIComponent(match[1]);
-      const payload = fromB64(decoded);
-      showPlayer();
-      renderPlayer(payload);
-      return;
-    }catch(e){
-      console.error("Invalid wish payload", e);
-      // fallback to builder
-    }
-  }
-
-  showBuilder();
-  updateLive();
-  wireEvents();
-}
-
-boot();
+/* small replay bounce */
+.replay-bounce{animation:rb .35s ease}
+@keyframes rb{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
