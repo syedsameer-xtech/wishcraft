@@ -1,140 +1,209 @@
-:root{
-  --a: #b38f6f;
-  --b: #161616;
-  --muted: #999;
-  --card-bg: rgba(255,255,255,0.04);
-  --glass: rgba(255,255,255,0.04);
-  --radius: 12px;
-  --max-width: 1120px;
-}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#161616" />
+  <title>WishCraft — Birthday Wish Link + QR</title>
+  <meta name="description" content="Create a premium birthday wish link with photo + themed QR. Host on GitHub Pages." />
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: Poppins, system-ui, sans-serif;
-  background: linear-gradient(180deg, #080808 0%, #0f0f0f 100%);
-  color: #fff;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  min-height:100vh;
-}
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
-/* background decorative */
-.bgfx{
-  position:fixed;
-  inset:0;
-  background: radial-gradient(800px 400px at 10% 20%, rgba(123,44,255,0.08), transparent),
-              radial-gradient(700px 300px at 90% 80%, rgba(0,124,255,0.06), transparent);
-  pointer-events:none;
-  z-index:0;
-}
+  <link rel="icon" href="Logo_0.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-/* header */
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:18px 20px;
-  max-width:var(--max-width);
-  margin:18px auto;
-  z-index:5;
-}
-.brand{display:flex;gap:12px;align-items:center}
-.logo{width:48px;height:48px;border-radius:10px;object-fit:cover}
-.brandName{font-weight:700;font-size:18px}
-.brandTag{font-size:12px;color:var(--muted)}
-.gh{color:#fff;text-decoration:none;background:transparent;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);font-size:13px}
+<body>
+  <div class="bgfx" aria-hidden="true"></div>
 
-/* main wrap */
-.wrap{max-width:var(--max-width);margin:10px auto;padding:18px;position:relative;z-index:2}
-.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,0.6)}
-.panelHead h1{margin:0;font-size:22px}
-.panelHead p{margin:6px 0 12px;color:var(--muted);font-size:14px}
+  <!-- Toast popup -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-/* grid */
-.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-@media (max-width:980px){.grid{grid-template-columns:1fr;}}
-.card{background:var(--card-bg);padding:16px;border-radius:12px;overflow:hidden}
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="Logo_0.png" alt="WishCraft Logo" onerror="this.style.display='none';" />
+      <div class="brandText">
+        <div class="brandName">WishCraft</div>
+        <div class="brandTag">Create a premium birthday wish link + themed QR</div>
+      </div>
+    </div>
+    <a class="gh" href="https://github.com/syedsameer-xtech/wishcraft" target="_blank" rel="noreferrer">GitHub</a>
+  </header>
 
-/* form */
-.lbl{display:block;font-size:13px;color:var(--muted);margin-top:8px}
-.inp{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
-.inp:focus{outline:none;box-shadow:0 4px 18px rgba(0,0,0,0.6)}
-.ta{min-height:86px;resize:vertical}
-.row{display:flex;gap:8px;margin-top:8px}
-.col{flex:1}
+  <main class="wrap">
+    <!-- BUILDER -->
+    <section id="builder" class="panel">
+      <div class="panelHead">
+        <h1>Create a Birthday Wish</h1>
+        <p>Fill details → upload photo → generate link + QR → share anywhere.</p>
+      </div>
 
-/* upload */
-.upload{margin-top:12px}
-.file{display:block;width:100%;padding:8px}
-.hint{font-size:12px;color:var(--muted);margin-top:6px}
-.preview{display:flex;align-items:center;gap:12px;margin-top:10px}
-.preview img{width:84px;height:84px;border-radius:10px;object-fit:cover;display:none}
-.uploadState{font-size:13px;color:var(--muted)}
+      <div class="grid">
+        <div class="card">
+          <label class="lbl" for="nameInput">Name</label>
+          <input id="nameInput" class="inp" maxlength="32" placeholder="e.g., Ali" />
 
-/* actions */
-.actions{display:flex;gap:8px;margin-top:12px}
-.btn{border:0;padding:10px 12px;border-radius:10px;background:transparent;color:#fff;cursor:pointer}
-.btn.primary{background:linear-gradient(90deg,var(--a),var(--b));box-shadow:0 8px 24px rgba(0,0,0,0.45)}
-.btn.ghost{border:1px solid rgba(255,255,255,0.06);color:#fff;background:transparent}
-.btn:active{transform:translateY(1px)}
+          <label class="lbl" for="msgInput">Message</label>
+          <textarea id="msgInput" class="inp ta" maxlength="160" placeholder="Write your birthday message...">Wish you a very happy birthday! 🎉</textarea>
 
-/* share & qr */
-.share{margin-top:14px}
-.shareRow{display:flex;gap:8px;align-items:center}
-.shareRow .inp{flex:1}
-.qrBlock{margin-top:12px;text-align:center}
-.qrWrap{display:flex;justify-content:center;align-items:center;padding:12px;background:rgba(0,0,0,0.25);border-radius:10px}
-.qrWrap img{max-width:100%;height:auto;border-radius:6px}
-.qrTitle{font-weight:600;margin-bottom:6px}
-.qrHint{font-size:12px;color:var(--muted);margin-top:6px}
+          <div class="row">
+            <div class="col">
+              <label class="lbl" for="themeSelect">Theme</label>
+              <select id="themeSelect" class="inp sel"></select>
+            </div>
+            <div class="col">
+              <label class="lbl" for="templateSelect">Template</label>
+              <select id="templateSelect" class="inp sel"></select>
+            </div>
+          </div>
 
-/* details */
-.tc summary{cursor:pointer;color:var(--muted);font-size:13px}
-.tc ul{margin:8px 0 0 18px;color:var(--muted);font-size:13px}
+          <div class="row">
+            <div class="col">
+              <label class="lbl" for="fontSelect">Font Style</label>
+              <select id="fontSelect" class="inp sel"></select>
+            </div>
+            <div class="col">
+              <label class="lbl" for="accentToggle">Effects</label>
+              <select id="accentToggle" class="inp sel">
+                <option value="auto">Auto</option>
+                <option value="glow">Glow</option>
+                <option value="sparkle">Sparkle</option>
+                <option value="neon">Neon</option>
+                <option value="glass">Glass</option>
+              </select>
+            </div>
+          </div>
 
-/* live preview */
-.liveHead{display:flex;justify-content:space-between;align-items:center}
-.chip{background:rgba(255,255,255,0.05);padding:6px 8px;border-radius:20px;font-size:12px}
-.mini{font-size:12px;color:var(--muted)}
-.stage{position:relative;border-radius:10px;padding:18px;margin-top:12px;min-height:280px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;flex-direction:column;align-items:center;justify-content:center}
-.stageGlow{position:absolute;inset:0;pointer-events:none;filter:blur(40px);opacity:0.4}
-.badge{display:flex;gap:8px;align-items:center;position:absolute;top:12px;left:12px}
-.badgeLogo{width:32px;height:32px;border-radius:8px;object-fit:cover}
-.hero{text-align:center;padding-top:28px}
-.hTitle{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.hName{font-size:34px;font-weight:700;margin-top:6px}
-.hMsg{font-size:15px;color:var(--muted);margin-top:6px;max-width:84%}
+          <div class="upload">
+            <label class="lbl">Photo (Cloudinary)</label>
+            <input id="photoInput" class="file" type="file" accept="image/*" />
+            <div class="hint">Tip: upload under 4MB for fast sharing.</div>
 
-/* photo frame */
-.photoFrame{width:160px;height:160px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;margin-top:14px;overflow:hidden;position:relative}
-.photoFrame img{width:100%;height:100%;object-fit:cover;display:none}
-.phFallback{color:var(--muted);font-size:13px}
+            <div class="preview">
+              <img id="photoPreview" alt="Photo preview" />
+              <div id="uploadState" class="uploadState">No photo uploaded</div>
+            </div>
+          </div>
 
-/* decor */
-.decor .orb{position:absolute;border-radius:50%;opacity:0.08}
-.decor .o1{width:220px;height:220px;left:-40px;top:-40px;background:var(--a)}
-.decor .o2{width:140px;height:140px;right:-30px;top:20px;background:var(--b)}
-.decor .o3{width:100px;height:100px;left:50%;transform:translateX(-50%);bottom:-30px;background:#fff}
+          <div class="actions">
+            <button id="generateBtn" class="btn primary" type="button">Generate Link + QR</button>
+            <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+          </div>
 
-/* player */
-.hidden{display:none}
-.playerWrap{max-width:760px;margin:0 auto}
-.playerStage{position:relative;border-radius:14px;padding:22px;min-height:420px;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.18))}
-.playerStage .playerPhoto{width:220px;height:220px;border-radius:14px;margin:18px auto;overflow:hidden;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center}
-.playerStage img{max-width:100%;height:100%;object-fit:cover;display:none}
+          <div class="share">
+            <label class="lbl">Share Link</label>
+            <div class="shareRow">
+              <input id="shareLink" class="inp" readonly placeholder="Generate to get link..." />
+              <button id="copyBtn" class="btn" type="button">Copy</button>
+            </div>
 
-/* confetti canvas */
-#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+            <div class="qrBlock">
+              <div class="qrTitle">Themed QR Code</div>
+              <div id="qrWrap" class="qrWrap"></div>
 
-/* footer */
-.footer{display:flex;justify-content:space-between;align-items:center;padding:12px;margin-top:14px;color:var(--muted);font-size:13px}
-.footer a{color:inherit;text-decoration:underline}
+              <div class="qrActions">
+                <button id="downloadQrBtn" class="btn ghost" type="button" disabled>Download QR</button>
+                <button id="copyQrBtn" class="btn ghost" type="button" disabled>Copy QR</button>
+              </div>
 
-/* effects classes (minimal) */
-.fx-glow .hName{text-shadow:0 6px 18px rgba(0,0,0,0.6)}
-.fx-neon .hName{filter:drop-shadow(0 0 8px rgba(123,44,255,0.35))}
-.fx-sparkle .orb{opacity:0.14}
-.fx-glass .photoFrame{backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.04)}
+              <div class="qrHint">Scan to open the wish. Works on all devices.</div>
+            </div>
+          </div>
+
+          <details class="tc">
+            <summary>Terms & Conditions</summary>
+            <ul>
+              <li>Do not upload illegal, harmful, adult, or copyrighted content without permission.</li>
+              <li>Uploaded images are stored on Cloudinary under your account (cloud: <b>danzponmi</b>).</li>
+              <li>This project is a static web app hosted on GitHub Pages; no personal data is stored by us on a server.</li>
+              <li>You are responsible for the links you generate and share.</li>
+              <li>“Made with ChatGPT” is a credit line and not an official endorsement.</li>
+            </ul>
+          </details>
+        </div>
+
+        <div class="card live">
+          <div class="liveHead">
+            <div class="chip">Live Preview</div>
+            <div class="mini">Open the link to see full animations.</div>
+          </div>
+
+          <div id="liveStage" class="stage t1">
+            <div class="stageGlow" aria-hidden="true"></div>
+
+            <div class="badge">
+              <img class="badgeLogo" src="Logo_0.png" alt="logo" onerror="this.style.display='none';" />
+              <span>WishCraft</span>
+            </div>
+
+            <div class="hero">
+              <div class="hTitle" id="liveTitle">Happy Birthday</div>
+              <div class="hName" id="liveName">Friend</div>
+              <div class="hMsg" id="liveMsg">Wish you a very happy birthday! 🎉</div>
+            </div>
+
+            <div class="photoFrame">
+              <img id="livePhoto" alt="photo" />
+              <div class="phFallback">Your Photo</div>
+            </div>
+
+            <div class="decor">
+              <div class="orb o1"></div>
+              <div class="orb o2"></div>
+              <div class="orb o3"></div>
+            </div>
+          </div>
+
+          <!-- REMOVED: How it works -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAYER -->
+    <section id="player" class="panel hidden">
+      <div class="playerWrap">
+        <div class="playerStage" id="playerStage">
+          <canvas id="confetti"></canvas>
+
+          <div class="badge playerBadge">
+            <img class="badgeLogo" src="Logo_0.png" alt="logo" onerror="this.style.display='none';" />
+            <span>WishCraft</span>
+          </div>
+
+          <div class="playerHero" id="playerHero">
+            <div class="pTitle" id="pTitle">Happy Birthday</div>
+            <div class="pName" id="pName">Friend</div>
+            <div class="pMsg" id="pMsg">Wish you a very happy birthday! 🎉</div>
+          </div>
+
+          <div class="playerPhoto">
+            <img id="pPhoto" alt="photo" />
+            <div class="phFallback">Your Photo</div>
+          </div>
+
+          <div class="playerCta">
+            <button id="replayBtn" class="btn primary" type="button">Replay</button>
+            <a id="makeNewBtn" class="btn ghost" href="./">Create yours</a>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="footLeft">
+            <span>Made with ChatGPT</span>
+            <span class="heart" aria-hidden="true">♥</span>
+            <span>by Syed Sameer</span>
+          </div>
+          <div class="footRight">
+            <a href="https://github.com/syedsameer-xtech/wishcraft" target="_blank" rel="noreferrer">Source</a>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
