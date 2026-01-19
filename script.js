@@ -6,6 +6,14 @@
 // - Themed QR (uses qrserver API for reliability)
 // - Player mode: opens wish from #wish=...
 // ================================
+//
+// Fixes applied:
+// - Robust Unicode-safe base64 encode/decode functions
+// - encodeURIComponent() the base64 payload when building the hash
+// - decodeURIComponent() before decoding when reading the hash
+// - Avoid errors if canvas/context are unavailable
+// - Small defensive DOM checks
+// ================================
 
 // Cloudinary
 const CLOUDINARY_CLOUD_NAME = "danzponmi";
@@ -61,13 +69,28 @@ function safeText(s, max=160){
   return String(s || "").replace(/\s+/g," ").trim().slice(0,max);
 }
 
+// Unicode-safe base64 helpers
+// Source pattern: encodeURIComponent -> percent sequences -> chars -> btoa
+function b64EncodeUnicode(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+    return String.fromCharCode('0x' + p1);
+  }));
+}
+function b64DecodeUnicode(b64){
+  const str = atob(b64);
+  // convert binary string to percent-encoded string, then decode
+  const percentEncoded = Array.prototype.map.call(str, function(c) {
+    const code = c.charCodeAt(0).toString(16).toUpperCase();
+    return '%' + ('00' + code).slice(-2);
+  }).join('');
+  return decodeURIComponent(percentEncoded);
+}
+
 function toB64(obj){
-  const json = JSON.stringify(obj);
-  return btoa(unescape(encodeURIComponent(json)));
+  return b64EncodeUnicode(JSON.stringify(obj));
 }
 function fromB64(b64){
-  const json = decodeURIComponent(escape(atob(b64)));
-  return JSON.parse(json);
+  return JSON.parse(b64DecodeUnicode(b64));
 }
 
 function setCSSVars(themeId){
@@ -112,11 +135,13 @@ function renderQR(url, themeId){
   if(!qrWrap) return;
 
   const t = THEMES.find(x => x.id === themeId) || THEMES[1];
-  const fg = t.qrFg.replace("#","");
-  const bg = t.qrBg.replace("#","");
+  // ensure no leading '#'
+  const fg = (t.qrFg || "").replace("#","");
+  const bg = (t.qrBg || "").replace("#","");
 
   const img = document.createElement("img");
   img.alt = "QR Code";
+  img.decoding = "async";
   img.src =
     "https://api.qrserver.com/v1/create-qr-code/?" +
     new URLSearchParams({
@@ -146,23 +171,22 @@ function updateLive(){
   applyFont(fontId, themeId);
   applyEffect(effect);
 
-  $("liveName").textContent = name;
-  $("liveMsg").textContent = msg;
-  $("liveStage").className = "stage " + template;
+  if($("liveName")) $("liveName").textContent = name;
+  if($("liveMsg")) $("liveMsg").textContent = msg;
+  const liveStage = $("liveStage");
+  if(liveStage) liveStage.className = "stage " + template;
 
   // photo
   const livePhoto = $("livePhoto");
   const phFallback = document.querySelector(".photoFrame .phFallback");
-  if(uploadedPhotoUrl){
+  if(uploadedPhotoUrl && livePhoto){
     livePhoto.src = uploadedPhotoUrl;
     livePhoto.style.display = "block";
     if(phFallback) phFallback.style.display = "none";
-    document.querySelector(".photoFrame img").style.display = "block";
-  } else {
+  } else if(livePhoto){
     livePhoto.removeAttribute("src");
     livePhoto.style.display = "none";
     if(phFallback) phFallback.style.display = "block";
-    document.querySelector(".photoFrame img").style.display = "none";
   }
 }
 
@@ -187,7 +211,9 @@ async function uploadToCloudinary(file){
 function confettiBurst(durationMs = 2000){
   const c = $("confetti");
   if(!c) return;
-  const ctx = c.getContext("2d");
+  const ctx = c.getContext && c.getContext("2d");
+  if(!ctx) return;
+
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
   const resize = () => {
@@ -212,9 +238,7 @@ function confettiBurst(durationMs = 2000){
     const elapsed = t - t0;
     ctx.clearRect(0,0,c.width,c.height);
 
-    // do not set fixed colors (requirement) => we draw with current fillStyle default,
-    // BUT we can vary alpha only. To still look good, use current theme via CSS vars in DOM? Not possible in canvas.
-    // So we keep it minimal + classy with white confetti.
+    // minimal classy white confetti (keeps visuals consistent)
     ctx.fillStyle = "rgba(255,255,255,.85)";
 
     for(const p of pieces){
@@ -243,12 +267,12 @@ function confettiBurst(durationMs = 2000){
 
 // ============ App Mode Switching ============
 function showBuilder(){
-  $("builder").classList.remove("hidden");
-  $("player").classList.add("hidden");
+  $("builder")?.classList.remove("hidden");
+  $("player")?.classList.add("hidden");
 }
 function showPlayer(){
-  $("builder").classList.add("hidden");
-  $("player").classList.remove("hidden");
+  $("builder")?.classList.add("hidden");
+  $("player")?.classList.remove("hidden");
 }
 
 // ============ Player render ============
@@ -265,22 +289,21 @@ function renderPlayer(payload){
   applyFont(fontId, themeId);
   applyEffect(effect);
 
-  $("pName").textContent = name;
-  $("pMsg").textContent = msg;
-  $("playerStage").className = "playerStage " + template;
+  if($("pName")) $("pName").textContent = name;
+  if($("pMsg")) $("pMsg").textContent = msg;
+  const playerStage = $("playerStage");
+  if(playerStage) playerStage.className = "playerStage " + template;
 
   const img = $("pPhoto");
   const fallback = document.querySelector(".playerPhoto .phFallback");
-  if(photo){
+  if(photo && img){
     img.src = photo;
     img.style.display = "block";
     if(fallback) fallback.style.display = "none";
-    document.querySelector(".playerPhoto img").style.display = "block";
-  } else {
+  } else if(img){
     img.removeAttribute("src");
     img.style.display = "none";
     if(fallback) fallback.style.display = "block";
-    document.querySelector(".playerPhoto img").style.display = "none";
   }
 
   // burst confetti
@@ -295,6 +318,7 @@ function renderPlayer(payload){
 
 // ============ Init builder selects ============
 function fillSelect(el, items, placeholder){
+  if(!el) return;
   el.innerHTML = "";
   if(placeholder){
     const opt = document.createElement("option");
@@ -320,31 +344,36 @@ function wireEvents(){
   $("accentToggle")?.addEventListener("change", updateLive);
 
   $("resetBtn")?.addEventListener("click", () => {
-    $("nameInput").value = "";
-    $("msgInput").value = "Wish you a very happy birthday! 🎉";
-    $("themeSelect").value = "bronzenoir";
-    $("templateSelect").value = "t1";
-    $("fontSelect").value = "auto";
-    $("accentToggle").value = "auto";
+    if($("nameInput")) $("nameInput").value = "";
+    if($("msgInput")) $("msgInput").value = "Wish you a very happy birthday! 🎉";
+    if($("themeSelect")) $("themeSelect").value = "bronzenoir";
+    if($("templateSelect")) $("templateSelect").value = "t1";
+    if($("fontSelect")) $("fontSelect").value = "auto";
+    if($("accentToggle")) $("accentToggle").value = "auto";
     uploadedPhotoUrl = "";
 
     const prev = $("photoPreview");
-    prev.removeAttribute("src");
-    prev.style.display = "none";
-    $("uploadState").textContent = "No photo uploaded";
+    if(prev){
+      prev.removeAttribute("src");
+      prev.style.display = "none";
+    }
+    const uploadState = $("uploadState");
+    if(uploadState) uploadState.textContent = "No photo uploaded";
 
-    $("shareLink").value = "";
-    $("qrWrap").innerHTML = "";
+    if($("shareLink")) $("shareLink").value = "";
+    const qrWrap = $("qrWrap");
+    if(qrWrap) qrWrap.innerHTML = "";
     updateLive();
   });
 
   $("copyBtn")?.addEventListener("click", async () => {
-    const val = $("shareLink").value.trim();
+    const val = ($("shareLink")?.value || "").trim();
     if(!val) return alert("Generate a link first.");
     try{
       await navigator.clipboard.writeText(val);
-      $("copyBtn").textContent = "Copied!";
-      setTimeout(()=> $("copyBtn").textContent = "Copy", 900);
+      const cb = $("copyBtn");
+      if(cb) cb.textContent = "Copied!";
+      setTimeout(()=> { if(cb) cb.textContent = "Copy"; }, 900);
     }catch{
       alert("Copy failed. Select link and copy manually.");
     }
@@ -360,21 +389,24 @@ function wireEvents(){
       return;
     }
 
-    $("uploadState").textContent = "Uploading to Cloudinary…";
+    const uploadState = $("uploadState");
+    if(uploadState) uploadState.textContent = "Uploading to Cloudinary…";
     try{
       const data = await uploadToCloudinary(file);
       uploadedPhotoUrl = data.secure_url;
 
       // show preview
       const prev = $("photoPreview");
-      prev.src = uploadedPhotoUrl;
-      prev.style.display = "block";
+      if(prev){
+        prev.src = uploadedPhotoUrl;
+        prev.style.display = "block";
+      }
 
-      $("uploadState").textContent = "Uploaded ✓ (Cloudinary CDN)";
+      if(uploadState) uploadState.textContent = "Uploaded ✓ (Cloudinary CDN)";
       updateLive();
     }catch(err){
       console.error(err);
-      $("uploadState").textContent = "Upload failed";
+      if(uploadState) uploadState.textContent = "Upload failed";
       alert("Upload failed. Please try again.");
     }
   });
@@ -399,12 +431,14 @@ function wireEvents(){
       photo: uploadedPhotoUrl || ""
     };
 
-    const hash = "#wish=" + toB64(payload);
+    // Encode payload safely for inclusion in URL hash
+    const b64 = toB64(payload);
+    const hash = "#wish=" + encodeURIComponent(b64);
 
     // Works on GitHub Pages
     const shareUrl = location.origin + location.pathname + hash;
 
-    $("shareLink").value = shareUrl;
+    if($("shareLink")) $("shareLink").value = shareUrl;
     renderQR(shareUrl, themeId);
   });
 
@@ -421,16 +455,18 @@ function boot(){
   fillSelect($("fontSelect"), FONTS);
 
   // Defaults
-  $("themeSelect").value = "bronzenoir";
-  $("templateSelect").value = "t1";
-  $("fontSelect").value = "auto";
-  $("accentToggle").value = "auto";
+  if($("themeSelect")) $("themeSelect").value = "bronzenoir";
+  if($("templateSelect")) $("templateSelect").value = "t1";
+  if($("fontSelect")) $("fontSelect").value = "auto";
+  if($("accentToggle")) $("accentToggle").value = "auto";
 
   // If opened from wish link
   const match = location.hash.match(/wish=([^&]+)/);
   if(match){
     try{
-      const payload = fromB64(match[1]);
+      // decodeURIComponent because we encode when generating
+      const decoded = decodeURIComponent(match[1]);
+      const payload = fromB64(decoded);
       showPlayer();
       renderPlayer(payload);
       return;
