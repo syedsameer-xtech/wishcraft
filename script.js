@@ -1,522 +1,448 @@
+// script.js
+// ================================
+// WishCraft (GitHub Pages Ready)
+// - Cloudinary unsigned upload (preset: wishcraft)
+// - Short share URL (photo uses CDN URL, not base64)
+// - Themed QR (uses qrserver API for reliability)
+// - Player mode: opens wish from #wish=...
+// ================================
+
+// Cloudinary
+const CLOUDINARY_CLOUD_NAME = "danzponmi";
+const CLOUDINARY_UNSIGNED_PRESET = "wishcraft";
+
+let uploadedPhotoUrl = "";
+
+// Theme list (all your palettes + few premium additions)
+const THEMES = [
+  { id:"sandwine", name:"#9e9a8d + #80011f", a:"#9e9a8d", b:"#80011f", qrFg:"ffffff", qrBg:"111111" },
+  { id:"bronzenoir", name:"#b38f6f + #161616", a:"#b38f6f", b:"#161616", qrFg:"111111", qrBg:"ffffff" },
+  { id:"earthoak", name:"#301c1b + #3f2a0d", a:"#301c1b", b:"#3f2a0d", qrFg:"ffffff", qrBg:"111111" },
+  { id:"roseice", name:"#64303d + #c3dbe7", a:"#64303d", b:"#c3dbe7", qrFg:"111111", qrBg:"ffffff" },
+
+  { id:"mintnavy", name:"#c3fdb8 + #1d2545", a:"#c3fdb8", b:"#1d2545", qrFg:"1d2545", qrBg:"c3fdb8" },
+  { id:"burntcream", name:"#c14a09 + #ffffc5", a:"#c14a09", b:"#ffffc5", qrFg:"c14a09", qrBg:"ffffc5" },
+  { id:"pinkazure", name:"#fff0f5 + #007fff", a:"#fff0f5", b:"#007fff", qrFg:"007fff", qrBg:"fff0f5" },
+  { id:"tealgold", name:"#00555a + #ffca4b", a:"#00555a", b:"#ffca4b", qrFg:"00555a", qrBg:"ffca4b" },
+
+  { id:"buttergraphite", name:"#F8DE7E + #39393F", a:"#F8DE7E", b:"#39393F", qrFg:"39393F", qrBg:"F8DE7E" },
+  { id:"bluemist", name:"#26538D + #F0FFFF", a:"#26538D", b:"#F0FFFF", qrFg:"26538D", qrBg:"F0FFFF" },
+  { id:"parchmentwine", name:"#DAD4B6 + #5C0120", a:"#DAD4B6", b:"#5C0120", qrFg:"5C0120", qrBg:"DAD4B6" },
+  { id:"forestlemon", name:"#05472A + #DFEF87", a:"#05472A", b:"#DFEF87", qrFg:"05472A", qrBg:"DFEF87" },
+
+  // extra premium themes
+  { id:"midnightviolet", name:"Midnight Violet", a:"#0b0b14", b:"#7b2cff", qrFg:"ffffff", qrBg:"0b0b14" },
+  { id:"auroracoral", name:"Aurora Coral", a:"#0a2239", b:"#ff6b6b", qrFg:"0a2239", qrBg:"fff0f5" }
+];
+
+// Fonts (real fonts loaded via Google Fonts + a few system)
+const FONTS = [
+  { id:"auto", name:"Auto (by theme)", css:"Poppins, system-ui, sans-serif" },
+  { id:"poppins", name:"Poppins (Modern)", css:"Poppins, system-ui, sans-serif" },
+  { id:"montserrat", name:"Montserrat (Clean)", css:"Montserrat, system-ui, sans-serif" },
+  { id:"raleway", name:"Raleway (Elegant)", css:"Raleway, system-ui, sans-serif" },
+  { id:"playfair", name:"Playfair Display (Luxury)", css:"'Playfair Display', serif" },
+  { id:"cinzel", name:"Cinzel (Royal)", css:"Cinzel, serif" },
+  { id:"pacifico", name:"Pacifico (Handwritten)", css:"Pacifico, cursive" }
+];
+
+// Templates
+const TEMPLATES = [
+  { id:"t1", name:"Premium Glow" },
+  { id:"t2", name:"Centered Minimal" },
+  { id:"t3", name:"Split Photo" },
+  { id:"t4", name:"Bold Poster" }
+];
+
+// ============ Helpers ============
 const $ = (id) => document.getElementById(id);
 
-const creator = $("creator");
-const viewer = $("viewer");
-
-const wishForm = $("wishForm");
-const nameInput = $("nameInput");
-const themeInput = $("themeInput");
-const templateInput = $("templateInput");
-const fontInput = $("fontInput");
-const msgInput = $("msgInput");
-const photoInput = $("photoInput");
-const fileHint = $("fileHint");
-const agreeTc = $("agreeTc");
-const resetBtn = $("resetBtn");
-const warn = $("warn");
-
-const previewName = $("previewName");
-const previewMsg = $("previewMsg");
-const previewAvatar = $("previewAvatar");
-const previewMeta = $("previewMeta");
-const chipTemplate = $("chipTemplate");
-
-const wishCardPreview = $("wishCardPreview");
-const wishCard = $("wishCard");
-
-const linkBox = $("linkBox");
-const shareLink = $("shareLink");
-const copyBtn = $("copyBtn");
-const shareBtn = $("shareBtn");
-const copyStatus = $("copyStatus");
-
-const wishName = $("wishName");
-const wishMsg = $("wishMsg");
-const wishAvatar = $("wishAvatar");
-const photoFrame = $("photoFrame");
-const wishPhoto = $("wishPhoto");
-
-const makeNewBtn = $("makeNewBtn");
-const replayBtn = $("replayBtn");
-
-const confettiCanvas = $("confetti");
-const tcDate = $("tcDate");
-if (tcDate) tcDate.textContent = new Date().toLocaleDateString();
-
-let photoDataUrl = "";
-
-/* THEMES (12) */
-const THEMES = {
-  sagewine:   { colors: ["#9e9a8d", "#80011f"], template: "t3", fonts: "editorial" },
-  goldblack:  { colors: ["#b38f6f", "#161616"], template: "t2", fonts: "cinematic" },
-  leather:    { colors: ["#301c1b", "#3f2a0d"], template: "t8", fonts: "serifLuxury" },
-  roseice:    { colors: ["#64303d", "#c3dbe7"], template: "t1", fonts: "script" },
-
-  mintnavy:   { colors: ["#c3fdb8", "#1d2545"], template: "t6", fonts: "modernSans" },
-  ambercream: { colors: ["#c14a09", "#ffffc5"], template: "t5", fonts: "displayBold" },
-  blushazure: { colors: ["#fff0f5", "#007fff"], template: "t4", fonts: "grotesk" },
-  tealgold:   { colors: ["#00555a", "#ffca4b"], template: "t2", fonts: "displayBold" },
-
-  champagnegraphite: { colors: ["#F8DE7E", "#39393F"], template: "t2", fonts: "caviar" },
-  royalice:          { colors: ["#26538D", "#F0FFFF"], template: "t1", fonts: "walkway" },
-  parchmentwine:     { colors: ["#DAD4B6", "#5C0120"], template: "t8", fonts: "okaluera" },
-  forestlime:        { colors: ["#05472A", "#DFEF87"], template: "t6", fonts: "eightone" },
-};
-
-/* FONT PACKS */
-const FONT_PACKS = {
-  displayBold: {
-    display: `"CustomDisplay","Futura","Trebuchet MS","Segoe UI",system-ui,sans-serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-  },
-  serifLuxury: {
-    display: `"Georgia","Times New Roman",serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-  },
-  modernSans: {
-    display: `"Avenir Next","Segoe UI",system-ui,sans-serif`,
-    body: `"Avenir","Segoe UI",system-ui,sans-serif`,
-    accent: `"Avenir","Segoe UI",system-ui,sans-serif`,
-  },
-  cinematic: {
-    display: `"Copperplate","Garamond","Georgia",serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `"Garamond","Georgia",serif`,
-  },
-  grotesk: {
-    display: `"Franklin Gothic Medium","Arial Narrow","Segoe UI",system-ui,sans-serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-  },
-  tech: {
-    display: `"SFMono-Regular","Consolas","Liberation Mono",monospace`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `"SFMono-Regular","Consolas","Liberation Mono",monospace`,
-  },
-  street: {
-    display: `"Impact","Arial Black",system-ui,sans-serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-  },
-  script: {
-    display: `"CustomDisplay","Futura","Trebuchet MS","Segoe UI",system-ui,sans-serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `"CustomScript","Pacifico","Segoe Script",cursive`,
-  },
-  editorial: {
-    display: `"Palatino Linotype","Book Antiqua",Palatino,serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `"Palatino Linotype","Book Antiqua",Palatino,serif`,
-  },
-
-  /* Your requested packs */
-  caviar: {
-    display: `"CaviarDreams","Montserrat","Segoe UI",system-ui,sans-serif`,
-    body: `"CaviarDreams","Segoe UI",system-ui,sans-serif`,
-    accent: `"CaviarDreams","Segoe UI",system-ui,sans-serif`,
-  },
-  walkway: {
-    display: `"Walkway","Avenir Next","Segoe UI",system-ui,sans-serif`,
-    body: `"Walkway","Segoe UI",system-ui,sans-serif`,
-    accent: `"Walkway","Segoe UI",system-ui,sans-serif`,
-  },
-  coolvetika: {
-    display: `"Coolvetika","Poppins","Segoe UI",system-ui,sans-serif`,
-    body: `"Poppins","Segoe UI",system-ui,sans-serif`,
-    accent: `"Poppins","Segoe UI",system-ui,sans-serif`,
-  },
-  eightone: {
-    display: `"EightOne","Oswald","Segoe UI",system-ui,sans-serif`,
-    body: `"Oswald","Segoe UI",system-ui,sans-serif`,
-    accent: `"Oswald","Segoe UI",system-ui,sans-serif`,
-  },
-  okaluera: {
-    display: `"Okaluera","Playfair Display","Georgia",serif`,
-    body: `"Playfair Display","Georgia",serif`,
-    accent: `"Okaluera","Playfair Display","Georgia",serif`,
-  },
-
-  custom: {
-    display: `"CustomDisplay","Tusker","Bone Slayer","Hype 1400","Futura","Segoe UI",system-ui,sans-serif`,
-    body: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`,
-    accent: `"CustomScript","Pacifico","Kirana","Segoe Script",cursive`,
-  },
-};
-
-function setVar(name, value) {
-  document.documentElement.style.setProperty(name, value);
+function safeText(s, max=160){
+  return String(s || "").replace(/\s+/g," ").trim().slice(0,max);
 }
 
-function applyTheme(themeName, templateChoice, fontChoice) {
-  const theme = THEMES[themeName] || THEMES.roseice;
-  const [p1, p2] = theme.colors;
-
-  setVar("--p1", p1);
-  setVar("--p2", p2);
-
-  const template = templateChoice || theme.template || "t1";
-  if (wishCardPreview) wishCardPreview.dataset.template = template;
-  if (wishCard) wishCard.dataset.template = template;
-  if (chipTemplate) chipTemplate.textContent = `🪄 ${template}`;
-
-  const fontKey = (fontChoice && fontChoice !== "auto") ? fontChoice : (theme.fonts || "displayBold");
-  const fp = FONT_PACKS[fontKey] || FONT_PACKS.displayBold;
-
-  setVar("--fontDisplay", fp.display);
-  setVar("--fontBody", fp.body);
-  setVar("--fontAccent", fp.accent);
-
-  if (previewMeta) previewMeta.textContent = `${themeName} • ${template} • ${fontChoice || "auto"}`;
-}
-
-function setAvatar(div, dataUrl, emoji = "🎂") {
-  if (!div) return;
-  div.innerHTML = "";
-  if (!dataUrl) {
-    const span = document.createElement("span");
-    span.className = "avatarEmoji";
-    span.textContent = emoji;
-    div.appendChild(span);
-    return;
-  }
-  const img = document.createElement("img");
-  img.src = dataUrl;
-  img.alt = "Photo";
-  div.appendChild(img);
-}
-
-function updatePreview() {
-  if (previewName) previewName.textContent = (nameInput?.value || "").trim() || "Friend";
-  if (previewMsg) previewMsg.textContent = (msgInput?.value || "").trim();
-  setAvatar(previewAvatar, photoDataUrl, "🎂");
-  applyTheme(themeInput?.value || "roseice", templateInput?.value || "", fontInput?.value || "auto");
-}
-
-/* URL (GitHub Pages safe: hash) */
-function encodeData(obj) {
+function toB64(obj){
   const json = JSON.stringify(obj);
   return btoa(unescape(encodeURIComponent(json)));
 }
-function decodeData(b64) {
+function fromB64(b64){
   const json = decodeURIComponent(escape(atob(b64)));
   return JSON.parse(json);
 }
-function buildShareUrl(payloadB64) {
-  const base = `${location.origin}${location.pathname}`;
-  return `${base}#wish=${payloadB64}`;
-}
-function readWishFromUrl() {
-  const hash = location.hash || "";
-  const match = hash.match(/wish=([^&]+)/);
-  if (!match) return null;
-  try { return decodeData(match[1]); } catch { return null; }
+
+function setCSSVars(themeId){
+  const t = THEMES.find(x => x.id === themeId) || THEMES[1];
+  document.documentElement.style.setProperty("--a", t.a);
+  document.documentElement.style.setProperty("--b", t.b);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.b);
+  return t;
 }
 
-/* Image compression */
-async function fileToCompressedDataURL(file, maxSize = 900, quality = 0.80) {
-  const dataUrl = await new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-
-  const img = await new Promise((resolve, reject) => {
-    const i = new Image();
-    i.onload = () => resolve(i);
-    i.onerror = reject;
-    i.src = dataUrl;
-  });
-
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  let { width, height } = img;
-  const scale = Math.min(1, maxSize / Math.max(width, height));
-  width = Math.round(width * scale);
-  height = Math.round(height * scale);
-
-  canvas.width = width;
-  canvas.height = height;
-  ctx.drawImage(img, 0, 0, width, height);
-
-  return canvas.toDataURL("image/jpeg", quality);
+function applyEffect(effect){
+  document.body.classList.remove("fx-glow","fx-sparkle","fx-neon","fx-glass");
+  if(effect && effect !== "auto"){
+    document.body.classList.add("fx-" + effect);
+  }
 }
 
-/* Confetti */
-function fitCanvas(canvas) {
-  if (!canvas || !viewer) return;
-  const rect = viewer.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return;
-  canvas.width = Math.floor(rect.width * devicePixelRatio);
-  canvas.height = Math.floor(rect.height * devicePixelRatio);
+function applyFont(fontId, themeId){
+  const font = FONTS.find(f => f.id === fontId) || FONTS[0];
+  if(fontId === "auto"){
+    // theme-based defaults
+    const darkish = (THEMES.find(t=>t.id===themeId)?.b || "#000").toLowerCase();
+    const isDark = isColorDark(darkish);
+    document.body.style.fontFamily = isDark ? "Poppins, system-ui, sans-serif" : "Montserrat, system-ui, sans-serif";
+    return;
+  }
+  document.body.style.fontFamily = font.css;
 }
 
-let confettiRAF = null;
-function launchConfetti(durationMs = 2400) {
-  if (!confettiCanvas) return;
-  cancelAnimationFrame(confettiRAF);
-  fitCanvas(confettiCanvas);
+function isColorDark(hex){
+  const h = hex.replace("#","").trim();
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  // perceived luminance
+  const L = (0.2126*r + 0.7152*g + 0.0722*b)/255;
+  return L < 0.45;
+}
 
-  const ctx = confettiCanvas.getContext("2d");
-  const w = confettiCanvas.width, h = confettiCanvas.height;
-  if (!w || !h) return;
+function renderQR(url, themeId){
+  const qrWrap = $("qrWrap");
+  if(!qrWrap) return;
 
-  const p1 = getComputedStyle(document.documentElement).getPropertyValue("--p1").trim() || "#fff";
-  const p2 = getComputedStyle(document.documentElement).getPropertyValue("--p2").trim() || "#fff";
+  const t = THEMES.find(x => x.id === themeId) || THEMES[1];
+  const fg = t.qrFg.replace("#","");
+  const bg = t.qrBg.replace("#","");
 
-  const count = 260;
-  const parts = Array.from({ length: count }, () => ({
-    x: Math.random() * w,
-    y: -Math.random() * h * 0.6,
-    vx: (Math.random() - 0.5) * 2.4 * devicePixelRatio,
-    vy: (Math.random() * 4.2 + 2.0) * devicePixelRatio,
-    r: (Math.random() * 7 + 3) * devicePixelRatio,
-    a: Math.random() * Math.PI * 2,
-    va: (Math.random() - 0.5) * 0.22,
-    life: Math.random() * 0.7 + 0.3,
-    c: Math.random() > 0.5 ? p1 : p2,
+  const img = document.createElement("img");
+  img.alt = "QR Code";
+  img.src =
+    "https://api.qrserver.com/v1/create-qr-code/?" +
+    new URLSearchParams({
+      size: "420x420",
+      data: url,
+      color: fg,
+      bgcolor: bg,
+      margin: "12",
+      qzone: "2",
+      format: "png"
+    }).toString();
+
+  qrWrap.innerHTML = "";
+  qrWrap.appendChild(img);
+}
+
+// Simple live preview
+function updateLive(){
+  const name = safeText($("nameInput")?.value || "Friend", 32);
+  const msg  = safeText($("msgInput")?.value || "Wish you a very happy birthday! 🎉", 160);
+  const themeId = $("themeSelect")?.value || "bronzenoir";
+  const fontId = $("fontSelect")?.value || "auto";
+  const effect = $("accentToggle")?.value || "auto";
+  const template = $("templateSelect")?.value || "t1";
+
+  setCSSVars(themeId);
+  applyFont(fontId, themeId);
+  applyEffect(effect);
+
+  $("liveName").textContent = name;
+  $("liveMsg").textContent = msg;
+  $("liveStage").className = "stage " + template;
+
+  // photo
+  const livePhoto = $("livePhoto");
+  const phFallback = document.querySelector(".photoFrame .phFallback");
+  if(uploadedPhotoUrl){
+    livePhoto.src = uploadedPhotoUrl;
+    livePhoto.style.display = "block";
+    if(phFallback) phFallback.style.display = "none";
+    document.querySelector(".photoFrame img").style.display = "block";
+  } else {
+    livePhoto.removeAttribute("src");
+    livePhoto.style.display = "none";
+    if(phFallback) phFallback.style.display = "block";
+    document.querySelector(".photoFrame img").style.display = "none";
+  }
+}
+
+// ============ Cloudinary Upload ============
+async function uploadToCloudinary(file){
+  const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+  const form = new FormData();
+  form.append("file", file);
+  form.append("upload_preset", CLOUDINARY_UNSIGNED_PRESET);
+  form.append("folder", "wishcraft");
+
+  const res = await fetch(endpoint, { method:"POST", body: form });
+  if(!res.ok){
+    const err = await res.text().catch(()=> "");
+    throw new Error("Cloudinary upload failed: " + err);
+  }
+  return await res.json();
+}
+
+// ============ Confetti (lightweight canvas) ============
+function confettiBurst(durationMs = 2000){
+  const c = $("confetti");
+  if(!c) return;
+  const ctx = c.getContext("2d");
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+  const resize = () => {
+    c.width = Math.floor(c.clientWidth * dpr);
+    c.height = Math.floor(c.clientHeight * dpr);
+  };
+  resize();
+
+  const t0 = performance.now();
+  const pieces = Array.from({length: 160}).map(() => ({
+    x: Math.random()*c.width,
+    y: -Math.random()*c.height*0.3,
+    vx: (Math.random()-0.5)*2.2*dpr,
+    vy: (Math.random()*2.4+1.2)*dpr,
+    r: (Math.random()*6+2)*dpr,
+    a: Math.random()*Math.PI*2,
+    va: (Math.random()-0.5)*0.18,
+    g: (Math.random()*0.06+0.03)*dpr
   }));
 
-  const start = performance.now();
-  function frame(t) {
-    ctx.clearRect(0, 0, w, h);
-    const elapsed = t - start;
-    const fade = Math.max(0, 1 - elapsed / durationMs);
+  function frame(t){
+    const elapsed = t - t0;
+    ctx.clearRect(0,0,c.width,c.height);
 
-    for (const p of parts) {
+    // do not set fixed colors (requirement) => we draw with current fillStyle default,
+    // BUT we can vary alpha only. To still look good, use current theme via CSS vars in DOM? Not possible in canvas.
+    // So we keep it minimal + classy with white confetti.
+    ctx.fillStyle = "rgba(255,255,255,.85)";
+
+    for(const p of pieces){
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.02 * devicePixelRatio;
+      p.vy += p.g;
       p.a += p.va;
 
       ctx.save();
-      ctx.globalAlpha = fade * p.life;
       ctx.translate(p.x, p.y);
       ctx.rotate(p.a);
-      ctx.fillStyle = p.c;
-      ctx.fillRect(-p.r, -p.r * 0.55, p.r * 2, p.r * 1.1);
+      ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
       ctx.restore();
     }
 
-    if (elapsed < durationMs) confettiRAF = requestAnimationFrame(frame);
-  }
-  confettiRAF = requestAnimationFrame(frame);
-}
-
-window.addEventListener("resize", () => {
-  if (viewer && !viewer.classList.contains("hidden")) fitCanvas(confettiCanvas);
-});
-
-/* Typewriter */
-async function typewriter(elm, text, speed = 14) {
-  if (!elm) return;
-  elm.textContent = "";
-  if (!text) return;
-  for (let i = 0; i < text.length; i++) {
-    elm.textContent += text[i];
-    await new Promise((r) => setTimeout(r, speed));
-  }
-}
-
-/* Mode */
-function setMode(mode) {
-  if (!creator || !viewer) return;
-  if (mode === "viewer") {
-    creator.classList.add("hidden");
-    viewer.classList.remove("hidden");
-  } else {
-    viewer.classList.add("hidden");
-    creator.classList.remove("hidden");
-  }
-}
-
-/* Tilt effect for template t6 (viewer only) */
-function enableTiltIfNeeded() {
-  if (!wishCard) return;
-  const template = wishCard.dataset.template;
-  if (template !== "t6") {
-    wishCard.style.transform = "";
-    wishCard.onmousemove = null;
-    wishCard.onmouseleave = null;
-    return;
-  }
-  wishCard.onmousemove = (e) => {
-    const r = wishCard.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    wishCard.style.transform = `rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg)`;
-  };
-  wishCard.onmouseleave = () => {
-    wishCard.style.transform = "rotateX(0deg) rotateY(0deg)";
-  };
-}
-
-/* Events */
-nameInput?.addEventListener("input", updatePreview);
-msgInput?.addEventListener("input", updatePreview);
-templateInput?.addEventListener("change", updatePreview);
-fontInput?.addEventListener("change", updatePreview);
-
-themeInput?.addEventListener("change", () => {
-  const t = THEMES[themeInput.value] || THEMES.roseice;
-  if (templateInput) templateInput.value = t.template;
-  if (fontInput) fontInput.value = "auto";
-  updatePreview();
-});
-
-photoInput?.addEventListener("change", async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) {
-    if (fileHint) fileHint.textContent = "PNG/JPG/WEBP • compressed for sharing";
-    photoDataUrl = "";
-    updatePreview();
-    return;
-  }
-
-  if (fileHint) fileHint.textContent = `${file.name} • ${Math.round(file.size / 1024)} KB`;
-
-  const quality = file.size > 2_000_000 ? 0.70 : 0.80;
-  const maxSize = file.size > 3_000_000 ? 720 : 900;
-
-  photoDataUrl = await fileToCompressedDataURL(file, maxSize, quality);
-  updatePreview();
-});
-
-wishForm?.addEventListener("submit", (e) => {
-  e.preventDefault();
-  warn?.classList.add("hidden");
-  if (warn) warn.textContent = "";
-  if (copyStatus) copyStatus.textContent = "";
-
-  if (agreeTc && !agreeTc.checked) {
-    if (warn) {
-      warn.classList.remove("hidden");
-      warn.textContent = "Please accept the Terms & Conditions.";
-    }
-    return;
-  }
-
-  const payload = {
-    v: 5,
-    name: (nameInput?.value || "").trim() || "Friend",
-    msg: (msgInput?.value || "").trim(),
-    theme: themeInput?.value || "roseice",
-    template: templateInput?.value || "t1",
-    font: fontInput?.value || "auto",
-    photo: photoDataUrl || "",
-  };
-
-  const b64 = encodeData(payload);
-  const url = buildShareUrl(b64);
-
-  if (warn && url.length > 4500) {
-    warn.classList.remove("hidden");
-    warn.textContent = "⚠️ Link is long because the photo is large. Use a smaller photo for easier sharing.";
-  }
-
-  if (shareLink) shareLink.value = url;
-  linkBox?.classList.remove("hidden");
-  linkBox?.scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-resetBtn?.addEventListener("click", () => {
-  if (nameInput) nameInput.value = "";
-  if (msgInput) msgInput.value = "";
-  if (themeInput) themeInput.value = "roseice";
-
-  const t = THEMES.roseice;
-  if (templateInput) templateInput.value = t.template;
-  if (fontInput) fontInput.value = "auto";
-
-  if (photoInput) photoInput.value = "";
-  photoDataUrl = "";
-  if (fileHint) fileHint.textContent = "PNG/JPG/WEBP • compressed for sharing";
-
-  warn?.classList.add("hidden");
-  linkBox?.classList.add("hidden");
-  updatePreview();
-});
-
-copyBtn?.addEventListener("click", async () => {
-  if (!shareLink) return;
-  try {
-    await navigator.clipboard.writeText(shareLink.value);
-    if (copyStatus) copyStatus.textContent = "Copied ✅";
-  } catch {
-    shareLink.select();
-    document.execCommand("copy");
-    if (copyStatus) copyStatus.textContent = "Copied ✅";
-  }
-});
-
-shareBtn?.addEventListener("click", async () => {
-  if (!shareLink) return;
-  const url = shareLink.value;
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: "Birthday Wish", text: "Open this 🎉", url });
+    if(elapsed < durationMs){
+      requestAnimationFrame(frame);
     } else {
-      await navigator.clipboard.writeText(url);
-      if (copyStatus) copyStatus.textContent = "Share not supported — link copied ✅";
+      ctx.clearRect(0,0,c.width,c.height);
     }
-  } catch {}
-});
-
-makeNewBtn?.addEventListener("click", () => {
-  history.replaceState(null, "", `${location.pathname}`);
-  setMode("creator");
-});
-
-replayBtn?.addEventListener("click", async () => {
-  const data = readWishFromUrl();
-  if (!data) return;
-  if (wishMsg) wishMsg.textContent = "";
-  await renderWish(data);
-});
-
-/* Viewer render */
-async function renderWish(data) {
-  const theme = data.theme || "roseice";
-  const template = data.template || (THEMES[theme]?.template || "t1");
-  const font = data.font || "auto";
-
-  applyTheme(theme, template, font);
-  enableTiltIfNeeded();
-
-  if (wishName) wishName.textContent = data.name || "Friend";
-  setAvatar(wishAvatar, data.photo || "", "🎉");
-
-  if (data.photo) {
-    if (wishPhoto) wishPhoto.src = data.photo;
-    photoFrame?.classList.remove("hidden");
-  } else {
-    photoFrame?.classList.add("hidden");
   }
+  requestAnimationFrame(frame);
 
-  await typewriter(wishMsg, data.msg || "", 14);
-  launchConfetti(2500);
+  window.addEventListener("resize", resize, { once:true });
 }
 
-/* Init */
-(function init() {
-  const currentTheme = themeInput?.value || "roseice";
-  const t = THEMES[currentTheme] || THEMES.roseice;
+// ============ App Mode Switching ============
+function showBuilder(){
+  $("builder").classList.remove("hidden");
+  $("player").classList.add("hidden");
+}
+function showPlayer(){
+  $("builder").classList.add("hidden");
+  $("player").classList.remove("hidden");
+}
 
-  if (templateInput) templateInput.value = t.template;
-  if (fontInput) fontInput.value = "auto";
+// ============ Player render ============
+function renderPlayer(payload){
+  const name = safeText(payload.name || "Friend", 32);
+  const msg = safeText(payload.msg || "Wish you a very happy birthday! 🎉", 160);
+  const themeId = payload.theme || "bronzenoir";
+  const fontId = payload.font || "auto";
+  const effect = payload.effect || "auto";
+  const template = payload.template || "t1";
+  const photo = payload.photo || "";
 
-  updatePreview();
+  const t = setCSSVars(themeId);
+  applyFont(fontId, themeId);
+  applyEffect(effect);
 
-  const data = readWishFromUrl();
-  if (!data) {
-    setMode("creator");
-    return;
+  $("pName").textContent = name;
+  $("pMsg").textContent = msg;
+  $("playerStage").className = "playerStage " + template;
+
+  const img = $("pPhoto");
+  const fallback = document.querySelector(".playerPhoto .phFallback");
+  if(photo){
+    img.src = photo;
+    img.style.display = "block";
+    if(fallback) fallback.style.display = "none";
+    document.querySelector(".playerPhoto img").style.display = "block";
+  } else {
+    img.removeAttribute("src");
+    img.style.display = "none";
+    if(fallback) fallback.style.display = "block";
+    document.querySelector(".playerPhoto img").style.display = "none";
   }
 
-  setMode("viewer");
-  fitCanvas(confettiCanvas);
-  renderWish(data);
-})();
+  // burst confetti
+  confettiBurst(2400);
+
+  // Update page title
+  document.title = `Happy Birthday, ${name}! — WishCraft`;
+
+  // Theme color meta
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t.b);
+}
+
+// ============ Init builder selects ============
+function fillSelect(el, items, placeholder){
+  el.innerHTML = "";
+  if(placeholder){
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = placeholder;
+    el.appendChild(opt);
+  }
+  for(const it of items){
+    const opt = document.createElement("option");
+    opt.value = it.id;
+    opt.textContent = it.name;
+    el.appendChild(opt);
+  }
+}
+
+// ============ Events ============
+function wireEvents(){
+  $("nameInput")?.addEventListener("input", updateLive);
+  $("msgInput")?.addEventListener("input", updateLive);
+  $("themeSelect")?.addEventListener("change", updateLive);
+  $("templateSelect")?.addEventListener("change", updateLive);
+  $("fontSelect")?.addEventListener("change", updateLive);
+  $("accentToggle")?.addEventListener("change", updateLive);
+
+  $("resetBtn")?.addEventListener("click", () => {
+    $("nameInput").value = "";
+    $("msgInput").value = "Wish you a very happy birthday! 🎉";
+    $("themeSelect").value = "bronzenoir";
+    $("templateSelect").value = "t1";
+    $("fontSelect").value = "auto";
+    $("accentToggle").value = "auto";
+    uploadedPhotoUrl = "";
+
+    const prev = $("photoPreview");
+    prev.removeAttribute("src");
+    prev.style.display = "none";
+    $("uploadState").textContent = "No photo uploaded";
+
+    $("shareLink").value = "";
+    $("qrWrap").innerHTML = "";
+    updateLive();
+  });
+
+  $("copyBtn")?.addEventListener("click", async () => {
+    const val = $("shareLink").value.trim();
+    if(!val) return alert("Generate a link first.");
+    try{
+      await navigator.clipboard.writeText(val);
+      $("copyBtn").textContent = "Copied!";
+      setTimeout(()=> $("copyBtn").textContent = "Copy", 900);
+    }catch{
+      alert("Copy failed. Select link and copy manually.");
+    }
+  });
+
+  $("photoInput")?.addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if(!file) return;
+
+    if(file.size > 4 * 1024 * 1024){
+      alert("Please upload an image under 4MB.");
+      e.target.value = "";
+      return;
+    }
+
+    $("uploadState").textContent = "Uploading to Cloudinary…";
+    try{
+      const data = await uploadToCloudinary(file);
+      uploadedPhotoUrl = data.secure_url;
+
+      // show preview
+      const prev = $("photoPreview");
+      prev.src = uploadedPhotoUrl;
+      prev.style.display = "block";
+
+      $("uploadState").textContent = "Uploaded ✓ (Cloudinary CDN)";
+      updateLive();
+    }catch(err){
+      console.error(err);
+      $("uploadState").textContent = "Upload failed";
+      alert("Upload failed. Please try again.");
+    }
+  });
+
+  $("generateBtn")?.addEventListener("click", () => {
+    const name = safeText($("nameInput")?.value || "Friend", 32);
+    const msg  = safeText($("msgInput")?.value || "Wish you a very happy birthday! 🎉", 160);
+    const themeId = $("themeSelect")?.value || "bronzenoir";
+    const template = $("templateSelect")?.value || "t1";
+    const fontId = $("fontSelect")?.value || "auto";
+    const effect = $("accentToggle")?.value || "auto";
+
+    // Short payload: photo is CDN URL, not base64
+    const payload = {
+      v: 6,
+      name,
+      msg,
+      theme: themeId,
+      template,
+      font: fontId,
+      effect,
+      photo: uploadedPhotoUrl || ""
+    };
+
+    const hash = "#wish=" + toB64(payload);
+
+    // Works on GitHub Pages
+    const shareUrl = location.origin + location.pathname + hash;
+
+    $("shareLink").value = shareUrl;
+    renderQR(shareUrl, themeId);
+  });
+
+  $("replayBtn")?.addEventListener("click", () => {
+    confettiBurst(2200);
+  });
+}
+
+// ============ Boot from URL ============
+function boot(){
+  // Fill selects
+  fillSelect($("themeSelect"), THEMES);
+  fillSelect($("templateSelect"), TEMPLATES);
+  fillSelect($("fontSelect"), FONTS);
+
+  // Defaults
+  $("themeSelect").value = "bronzenoir";
+  $("templateSelect").value = "t1";
+  $("fontSelect").value = "auto";
+  $("accentToggle").value = "auto";
+
+  // If opened from wish link
+  const match = location.hash.match(/wish=([^&]+)/);
+  if(match){
+    try{
+      const payload = fromB64(match[1]);
+      showPlayer();
+      renderPlayer(payload);
+      return;
+    }catch(e){
+      console.error("Invalid wish payload", e);
+      // fallback to builder
+    }
+  }
+
+  showBuilder();
+  updateLive();
+  wireEvents();
+}
+
+boot();
