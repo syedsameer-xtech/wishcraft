@@ -292,3 +292,51 @@ body{
 
 .replay-bounce{animation:rb .35s ease}
 @keyframes rb{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* ---------- SELECT / OPTION VISIBILITY FIX ---------- */
+/* Ensure closed select shows white text on dark control,
+   but native opened dropdown (often light) uses dark option text. */
+
+select.inp, select.sel {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.08) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.08) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+  cursor: pointer;
+  color: #fff;            /* selected value visible on dark control */
+  text-overflow: ellipsis;
+}
+
+/* Native dropdown items are often rendered with light bg.
+   Make option text dark so it's visible in that case. */
+select.inp option,
+select.sel option {
+  color: #111;            /* dark text for native/light dropdowns */
+  background: #fff;       /* explicit light bg for option items (many UAs ignore) */
+}
+
+/* For platforms that support styling options for dark mode, prefer white on dark */
+@media (prefers-color-scheme: dark) {
+  select.inp option,
+  select.sel option {
+    color: #fff;
+    background: #0f0f0f;
+  }
+}
+
+/* Readonly input (share link) increased contrast */
+.inp[readonly]{
+  background:rgba(255,255,255,0.02);
+  color:#fff;
+  opacity:1;
+}
+
+/* small tweak: make select padding consistent with inputs on mobile */
+@media (max-width:520px){
+  select.inp, select.sel { padding-right: 30px; }
+}
