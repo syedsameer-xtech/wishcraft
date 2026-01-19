@@ -7,11 +7,12 @@
   <title>WishCraft — Birthday Wish Link + QR</title>
   <meta name="description" content="Create a premium birthday wish link with photo + themed QR. Host on GitHub Pages." />
 
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Put Logo_0.png in repo root -->
   <link rel="icon" href="Logo_0.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -19,7 +20,6 @@
 <body>
   <div class="bgfx" aria-hidden="true"></div>
 
-  <!-- Toast popup -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <header class="topbar">
@@ -34,6 +34,7 @@
   </header>
 
   <main class="wrap">
+
     <!-- BUILDER -->
     <section id="builder" class="panel">
       <div class="panelHead">
@@ -106,6 +107,7 @@
 
               <div class="qrActions">
                 <button id="downloadQrBtn" class="btn ghost" type="button" disabled>Download QR</button>
+                <button id="shareQrBtn" class="btn ghost" type="button" disabled>Share QR</button>
                 <button id="copyQrBtn" class="btn ghost" type="button" disabled>Copy QR</button>
               </div>
 
@@ -118,17 +120,17 @@
             <ul>
               <li>Do not upload illegal, harmful, adult, or copyrighted content without permission.</li>
               <li>Uploaded images are stored on Cloudinary under your account (cloud: <b>danzponmi</b>).</li>
-              <li>This project is a static web app hosted on GitHub Pages; no personal data is stored by us on a server.</li>
+              <li>This is a static web app hosted on GitHub Pages; no server storage by us.</li>
               <li>You are responsible for the links you generate and share.</li>
-              <li>“Made with ChatGPT” is a credit line and not an official endorsement.</li>
             </ul>
           </details>
         </div>
 
+        <!-- Live Preview -->
         <div class="card live">
           <div class="liveHead">
             <div class="chip">Live Preview</div>
-            <div class="mini">Open the link to see full animations.</div>
+            <div class="mini">Open the link for full effect.</div>
           </div>
 
           <div id="liveStage" class="stage t1">
@@ -156,8 +158,6 @@
               <div class="orb o3"></div>
             </div>
           </div>
-
-          <!-- REMOVED: How it works -->
         </div>
       </div>
     </section>
@@ -202,6 +202,7 @@
         </footer>
       </div>
     </section>
+
   </main>
 
   <script src="script.js"></script>
