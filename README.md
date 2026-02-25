@@ -1,107 +1,279 @@
-# WishCraft 🎉 (Birthday Wish Studio)
+✨ WishCraft — Premium Birthday Wish Studio
 
-A premium **birthday wish web page generator** built for **GitHub Pages**.
+Create stunning, shareable birthday wish pages with themes, fonts, effects, photos, and a beautifully styled QR code — all hosted on GitHub Pages.
 
-Create a wish by entering a name, theme, template, font, message, and optional photo.  
-It generates a **shareable link** — when opened, it shows the birthday wish with effects.
+<p align="center"> <b>🎉 Design → Generate → Share → Celebrate</b> </p>
+🌐 Live Demo
 
----
+After enabling GitHub Pages:
+https://syedsameer-xtech.github.io/wishcraft/
 
-## 🚀 Live Site
-After enabling GitHub Pages, your site will be available at:
+Generated wishes look like:
+https://syedsameer-xtech.github.io/wishcraft/#wish=...
 
-**https://syedsameer-xtech.github.io/wishcraft/**
+No backend. No database.
+Everything runs directly in the browser.
 
-Share links will look like:
-**https://syedsameer-xtech.github.io/wishcraft/#wish=...**
+🚀 Features
+🎨 Premium Themes
 
----
+Beautiful dual-tone gradient themes with intelligent QR color matching.
 
-## ✅ How to Enable GitHub Pages
-1. Go to: **Settings → Pages**
-2. Under **Source**, choose **Deploy from a branch**
-3. Select:
-   - Branch: `main`
-   - Folder: `/ (root).`
-4. Click **Save**
+🧩 Templates
 
----
+Multiple layout styles:
 
-## 📁 Project Structure
+Premium Glow
+
+Centered Minimal
+
+Split Photo
+
+Bold Poster
+
+🔤 Font Styles
+
+Luxury + modern typography:
+
+Poppins
+
+Montserrat
+
+Raleway
+
+Playfair Display
+
+Cinzel
+
+Pacifico
+
+Auto mode (theme-based)
+
+✨ Visual Effects
+
+Glow
+
+Sparkle
+
+Neon
+
+Glass
+
+Auto
+
+🖼 Cloud Photo Upload
+
+Secure upload to Cloudinary
+
+CDN-delivered images
+
+Fast loading
+
+Optional (works without photo)
+
+🔗 Smart Share Link
+
+Encodes the full design inside the URL hash:
+
+No server storage
+
+Fully static
+
+Privacy friendly
+
+📱 Themed QR Code
+
+Auto-colored based on selected theme
+
+Downloadable PNG
+
+Shareable
+
+Clipboard copy supported
+
+🎊 Confetti Celebration
+
+Animated confetti burst on wish open.
+
+🛠 Tech Stack
+
+HTML5
+
+Modern CSS (Glassmorphism + Gradients)
+
+Vanilla JavaScript
+
+Cloudinary (Image Hosting)
+
+QRServer API
+
+GitHub Pages (Hosting)
+
+Zero frameworks.
+Zero build tools.
+Pure performance.
+
+📦 Project Structure
 
 wishcraft/
-├─ index.html
-├─ style.css
-├─ script.js
-├─ logo.png (optional: your logo)
-└─ fonts/ (optional: custom fonts)
+│
+├── index.html
+├── style.css
+├── script.js
+├── Logo_0.png (optional logo)
+└── README.md
 
+⚙️ Setup Guide
+1️⃣ Upload to GitHub
 
----
+Push the repository to GitHub.
 
-## 🖼 Logo Setup (Optional)
-If you want your logo to show:
-- Add your logo file in the repo root
-- Rename it to: **logo.png**
+2️⃣ Enable GitHub Pages
 
----
+Go to:
+Settings → Pages
+Under Source:
 
-## 🔤 Custom Fonts (Optional)
-This project supports custom fonts if you upload `.woff2` files inside:
+Select: Deploy from a branch
 
+Branch: main
 
----
+Folder: / (root)
 
-## 🖼 Logo Setup (Optional)
-If you want your logo to show:
-- Add your logo file in the repo root
-- Rename it to: **logo.png**
+Click Save
 
----
+Your site will go live within 1 minute.
 
-## 🔤 Custom Fonts (Optional)
-This project supports custom fonts if you upload `.woff2` files inside:
+🖼 Cloudinary Setup (Required for Photo Upload)
 
+In script.js:
+const CLOUDINARY_CLOUD_NAME = "your_cloud_name";
+const CLOUDINARY_UNSIGNED_PRESET = "your_unsigned_preset";
 
----
+Create Unsigned Upload Preset:
 
-## 🖼 Logo Setup (Optional)
-If you want your logo to show:
-- Add your logo file in the repo root
-- Rename it to: **logo.png**
+Cloudinary Dashboard
 
----
+Settings → Upload
 
-## 🔤 Custom Fonts (Optional)
-This project supports custom fonts if you upload `.woff2` files inside:
+Enable "Unsigned uploads"
 
-Example:
-fonts/CaviarDreams.woff2
-fonts/Coolvetika.woff2
-fonts/Walkway.woff2
-fonts/EightOne.woff2
-fonts/Okaluera.woff2
+Create preset
 
+Copy preset name
 
-If you don’t add fonts, the site still works using safe fallback fonts.
+🔐 Privacy & Architecture
 
----
+No backend
 
-## ⚠️ Notes
-- This is a **static** project (no backend).
-- The photo is compressed and embedded inside the share link.
-- Huge photos can create long links — use smaller images for best sharing.
+No cookies
 
----
+No user tracking
 
-## 🧾 Terms & Conditions
+No database
+
+No stored user content
+
+All wish data is encoded in the URL hash:
+#wish=BASE64_ENCODED_DATA
+
+This means:
+
+The server never sees the wish content
+
+Everything runs client-side
+
+Fully static hosting compatible
+
+🎯 How It Works
+
+User enters:
+
+Name
+
+Message
+
+Theme
+
+Template
+
+Font
+
+Effect
+
+Optional photo
+
+Data is:
+
+Sanitized
+
+JSON encoded
+
+Base64 encoded
+
+Added to URL hash
+
+QR code is generated using:
+
+https://api.qrserver.com/
+
+When link is opened:
+
+Hash is decoded
+
+UI renders player mode
+
+Confetti plays 🎉
+
+📱 Device Compatibility
+
+Chrome
+
+Safari
+
+Firefox
+
+Edge
+
+Android browsers
+
+iOS browsers
+
+Responsive + Mobile Optimized.
+
+🎨 Design Philosophy
+
+WishCraft focuses on:
+
+Clean dark luxury aesthetic
+
+Subtle glow gradients
+
+High readability
+
+Premium visual hierarchy
+
+Zero clutter UI
+
+Smooth interactions
+
+Elegant typography
+
+Minimal but powerful.
+
+⚠️ Usage Terms
+
 By using this project:
-- You confirm you own rights to the text/photos you upload.
-- Do not upload illegal or privacy-violating content.
-- Anyone with the generated link can view it.
-- The project is provided “as-is”.
 
----
+You confirm rights to any uploaded content.
 
-## ❤️ Credits
-Made with ChatGPT ♥ by **Syed Sameer**
+Do not upload illegal or copyrighted material.
+
+Anyone with the link can access the wish.
+
+The project is provided “as-is”.
+
+❤️ Credits
+
+Made with ChatGPT ♥
+Designed & Built by Syed Sameer
