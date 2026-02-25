@@ -1,27 +1,28 @@
-✨ WishCraft — Premium Birthday Wish Studio
+WishCraft — Premium Birthday Wish Link + QR Generator
+Overview
 
-Create stunning, shareable birthday wish pages with themes, fonts, effects, photos, and a beautifully styled QR code — all hosted on GitHub Pages.
+WishCraft is a professional-grade static web application for generating premium, shareable birthday wish pages. It is designed for GitHub Pages deployment and requires no backend infrastructure.
 
-<p align="center"> <b>🎉 Design → Generate → Share → Celebrate</b> </p>
-🌐 Live Demo
+The system encodes all wish data directly into the URL hash using Base64, enabling:
 
-After enabling GitHub Pages:
-https://syedsameer-xtech.github.io/wishcraft/
+Fully static hosting
 
-Generated wishes look like:
-https://syedsameer-xtech.github.io/wishcraft/#wish=...
+Zero server storage
 
-No backend. No database.
-Everything runs directly in the browser.
+High performance
 
-🚀 Features
-🎨 Premium Themes
+Privacy-friendly sharing
 
-Beautiful dual-tone gradient themes with intelligent QR color matching.
+Instant QR generation
 
-🧩 Templates
+WishCraft combines modern UI design, theme-based customization, Cloudinary image hosting, and dynamic QR rendering to deliver a polished celebratory experience.
 
-Multiple layout styles:
+Features
+
+Premium Theme Engine
+Dual-tone gradient themes with dynamic CSS variables and auto QR color adaptation.
+
+Multiple Layout Templates
 
 Premium Glow
 
@@ -31,9 +32,7 @@ Split Photo
 
 Bold Poster
 
-🔤 Font Styles
-
-Luxury + modern typography:
+Typography System
 
 Poppins
 
@@ -47,9 +46,9 @@ Cinzel
 
 Pacifico
 
-Auto mode (theme-based)
+Intelligent Auto mode
 
-✨ Visual Effects
+Visual Effects Engine
 
 Glow
 
@@ -59,82 +58,65 @@ Neon
 
 Glass
 
-Auto
+Auto mode
 
-🖼 Cloud Photo Upload
+Cloudinary Image Upload
 
-Secure upload to Cloudinary
-
-CDN-delivered images
+CDN-hosted image delivery
 
 Fast loading
 
-Optional (works without photo)
+Optional photo support
 
-🔗 Smart Share Link
+Size validation (under 4MB)
 
-Encodes the full design inside the URL hash:
+Themed QR Code Generation
 
-No server storage
-
-Fully static
-
-Privacy friendly
-
-📱 Themed QR Code
-
-Auto-colored based on selected theme
+Color-matched QR codes
 
 Downloadable PNG
 
-Shareable
+Clipboard copy support
 
-Clipboard copy supported
+Native share API integration
 
-🎊 Confetti Celebration
+Confetti Animation System
+Canvas-powered animated celebration when wish is opened.
 
-Animated confetti burst on wish open.
+Fully Static Architecture
+No database. No backend. No cookies.
 
-🛠 Tech Stack
-
-HTML5
-
-Modern CSS (Glassmorphism + Gradients)
-
-Vanilla JavaScript
-
-Cloudinary (Image Hosting)
-
-QRServer API
-
-GitHub Pages (Hosting)
-
-Zero frameworks.
-Zero build tools.
-Pure performance.
-
-📦 Project Structure
-
+Project Structure
 wishcraft/
-│
-├── index.html
-├── style.css
-├── script.js
-├── Logo_0.png (optional logo)
-└── README.md
+├── index.html          # Main UI + player view
+├── style.css           # Complete theme & layout system
+├── script.js           # Core engine (encoding, QR, upload, rendering)
+├── Logo_0.png          # Optional logo
+├── README.md
+└── ...
+Installation
+1. Clone the Repository
+git clone https://github.com/syedsameer-xtech/wishcraft.git
+cd wishcraft
+2. No Build Step Required
 
-⚙️ Setup Guide
-1️⃣ Upload to GitHub
+This is a fully static project.
 
-Push the repository to GitHub.
+Simply open:
 
-2️⃣ Enable GitHub Pages
+index.html
+
+Or deploy via GitHub Pages.
+
+GitHub Pages Deployment
 
 Go to:
+
 Settings → Pages
+
 Under Source:
 
-Select: Deploy from a branch
+Select Deploy from a branch
 
 Branch: main
 
@@ -142,56 +124,17 @@ Folder: / (root)
 
 Click Save
 
-Your site will go live within 1 minute.
+Your site will be available at:
 
-🖼 Cloudinary Setup (Required for Photo Upload)
+https://syedsameer-xtech.github.io/wishcraft/
+Usage
+1. Create a Wish
 
-In script.js:
-const CLOUDINARY_CLOUD_NAME = "your_cloud_name";
-const CLOUDINARY_UNSIGNED_PRESET = "your_unsigned_preset";
-
-Create Unsigned Upload Preset:
-
-Cloudinary Dashboard
-
-Settings → Upload
-
-Enable "Unsigned uploads"
-
-Create preset
-
-Copy preset name
-
-🔐 Privacy & Architecture
-
-No backend
-
-No cookies
-
-No user tracking
-
-No database
-
-No stored user content
-
-All wish data is encoded in the URL hash:
-#wish=BASE64_ENCODED_DATA
-
-This means:
-
-The server never sees the wish content
-
-Everything runs client-side
-
-Fully static hosting compatible
-
-🎯 How It Works
-
-User enters:
+Fill in:
 
 Name
 
-Message
+Birthday message
 
 Theme
 
@@ -199,81 +142,243 @@ Template
 
 Font
 
-Effect
+Visual effect
 
 Optional photo
 
-Data is:
+Click:
 
-Sanitized
+Generate Link + QR
 
-JSON encoded
+The system:
 
-Base64 encoded
+Encodes data into Base64
 
-Added to URL hash
+Appends it to URL hash
 
-QR code is generated using:
+Generates a themed QR
 
-https://api.qrserver.com/
+Enables download/share/copy
 
-When link is opened:
+2. Open a Wish
+
+When a link like:
+
+#wish=BASE64_DATA
+
+is opened:
 
 Hash is decoded
 
-UI renders player mode
+JSON payload is parsed
 
-Confetti plays 🎉
+Theme + template applied
 
-📱 Device Compatibility
+Photo loaded (if exists)
 
-Chrome
+Confetti animation triggered
 
-Safari
+How It Works (Technical Breakdown)
+Encoding System
+const payload = {
+  v: 7,
+  name,
+  msg,
+  theme,
+  template,
+  font,
+  effect,
+  photo
+};
 
-Firefox
+JSON serialized
 
-Edge
+UTF-safe Base64 encoded
 
-Android browsers
+Stored in URL hash
 
-iOS browsers
+Server never sees data
 
-Responsive + Mobile Optimized.
+QR Code Generation
 
-🎨 Design Philosophy
+Uses:
 
-WishCraft focuses on:
+https://api.qrserver.com/v1/create-qr-code/
 
-Clean dark luxury aesthetic
+Parameters:
 
-Subtle glow gradients
+size
 
-High readability
+data
 
-Premium visual hierarchy
+foreground color
 
-Zero clutter UI
+background color
 
-Smooth interactions
+margin
 
-Elegant typography
+format
 
-Minimal but powerful.
+QR image is fetched as a Blob for:
 
-⚠️ Usage Terms
+Download
 
-By using this project:
+Native share
 
-You confirm rights to any uploaded content.
+Clipboard copy
 
-Do not upload illegal or copyrighted material.
+Cloudinary Upload Flow
 
-Anyone with the link can access the wish.
+User selects image
 
-The project is provided “as-is”.
+File validated (<4MB)
 
-❤️ Credits
+Uploaded via unsigned preset
 
+CDN URL returned
+
+Stored inside payload
+
+No server handling required.
+
+Rendering Engine
+
+When in Player Mode:
+
+CSS variables updated dynamically
+
+Body classes adjusted for effects
+
+Template class applied
+
+Font family switched
+
+Photo container toggled
+
+Canvas confetti rendered
+
+All rendering is client-side.
+
+Architecture Principles
+
+Static-first design
+
+No runtime dependencies
+
+No build tools
+
+CDN-based image hosting
+
+Stateless architecture
+
+URL-driven state
+
+Clean separation of builder and player modes
+
+Security & Privacy
+
+No database storage
+
+No cookies
+
+No tracking
+
+No backend logs
+
+URL hash data never sent to server
+
+User responsible for uploaded content
+
+Performance Considerations
+
+Images recommended under 4MB
+
+QR generated at 640x640
+
+Confetti optimized with requestAnimationFrame
+
+No heavy frameworks
+
+Minimal DOM updates
+
+Troubleshooting
+
+QR not generating?
+
+Check internet connection (QR API required).
+
+Photo upload failing?
+
+Verify Cloudinary preset and cloud name.
+
+Ensure file under 4MB.
+
+Share API not working?
+
+Some browsers do not support navigator.share().
+
+Link too long?
+
+Use smaller images.
+
+Avoid extremely long messages.
+
+Dependencies
+
+External services used:
+
+Cloudinary (image hosting)
+
+QRServer API (QR generation)
+
+Google Fonts
+
+GitHub Pages (hosting)
+
+No npm packages required.
+
+Best Practices
+
+Use high contrast themes for readability.
+
+Keep messages concise for better layout.
+
+Use square images for optimal cropping.
+
+Avoid large file uploads.
+
+Test the generated link before sharing.
+
+Roadmap Ideas
+
+Background music support
+
+Video background templates
+
+Countdown timer
+
+Export as image
+
+Multi-language support
+
+Custom QR styling engine
+
+Save design locally
+
+Credits
+
+Built with modern web standards.
 Made with ChatGPT ♥
-Designed & Built by Syed Sameer
+Designed & Developed by Syed Sameer
+
+License
+
+This project is provided for educational and personal use.
+
+Users are responsible for:
+
+Uploaded content
+
+Generated links
+
+Shared media
