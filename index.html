@@ -212,7 +212,7 @@ select.inp option{color:#111;background:#fff}
 .h-name{font-size:clamp(24px,5vw,34px);font-weight:800;margin-top:4px;line-height:1.05;letter-spacing:-.02em}
 .h-age{font-size:12px;color:var(--a);margin-top:3px;font-family:'DM Mono',monospace}
 .h-msg{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.55}
-.photo-frame{width:130px;height:130px;border-radius:14px;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);flex-shrink:0;z-index:1;transition:all .3s}
+.photo-frame{width:160px;height:160px;border-radius:18px;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.1);flex-shrink:0;z-index:1;transition:all .3s;box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.04)}
 .photo-frame img{width:100%;height:100%;object-fit:cover;display:none}
 .ph-fallback{color:var(--muted2);font-size:11px}
 .decor-orbs .o{position:absolute;border-radius:50%;opacity:.06;pointer-events:none}
@@ -282,20 +282,20 @@ select.inp option{color:#111;background:#fff}
 .expired-sub{color:var(--muted);font-size:14px;max-width:300px;line-height:1.65}
 /* ── Player */
 .player-wrap{max-width:740px;margin:0 auto}
-.player-stage{position:relative;border-radius:22px;padding:32px;min-height:560px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:18px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:linear-gradient(160deg,rgba(255,255,255,.025),rgba(0,0,0,.25));transition:background .5s}
+.player-stage{position:relative;border-radius:22px;padding:36px 32px 28px;min-height:620px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:linear-gradient(160deg,rgba(255,255,255,.025),rgba(0,0,0,.25));transition:background .5s}
 .player-hero{text-align:center;margin-top:44px;max-width:92%;z-index:1}
 .p-title{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.14em;font-family:'DM Mono',monospace}
 .p-name{font-size:clamp(38px,8vw,60px);font-weight:800;margin-top:8px;line-height:1;letter-spacing:-.03em}
 .p-age{font-size:14px;color:var(--a);margin-top:6px;font-family:'DM Mono',monospace}
 .p-msg{font-size:clamp(13px,2vw,16px);color:var(--muted);margin-top:14px;max-width:540px;line-height:1.65}
-.player-photo{width:min(240px,72vw);aspect-ratio:1;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.08);z-index:1;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.player-photo{width:min(300px,80vw);aspect-ratio:1;border-radius:24px;overflow:hidden;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.1);z-index:1;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06),0 0 40px rgba(var(--photo-glow,179,143,111),.12)}
 .player-photo img{width:100%;height:100%;object-fit:cover;display:none}
 .player-badge{position:absolute;top:18px;left:18px}
 .player-cta{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;z-index:1}
 .player-stage.t4{background:linear-gradient(145deg,rgba(179,143,111,.3),rgba(22,22,22,.9))}
 .player-stage.t5{flex-direction:column-reverse;padding:40px 32px 24px}
 .player-stage.no-photo .player-photo{display:none}
-.player-stage.no-photo .p-name{font-size:clamp(48px,11vw,80px)}
+.player-stage.no-photo .p-name{font-size:clamp(52px,12vw,88px)}
 #confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .fullscreen-btn{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--stroke2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:13px;transition:all .15s;z-index:2}
 .fullscreen-btn:hover{background:rgba(255,255,255,.12);color:#fff}
@@ -329,11 +329,40 @@ select.inp option{color:#111;background:#fff}
 @keyframes typing{from{width:0;max-width:0}to{width:100%;max-width:100%}}
 @keyframes blink{50%{border-color:transparent}}
 .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;animation:spin .65s linear infinite;display:inline-block;vertical-align:middle}
-/* Countdown */
-.countdown-strip{display:flex;gap:8px;z-index:1;font-family:'DM Mono',monospace}
-.cd-unit{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 12px;text-align:center;min-width:52px}
-.cd-val{font-size:22px;font-weight:700;line-height:1;display:block}
-.cd-lbl{font-size:9px;color:var(--muted2);letter-spacing:.08em;display:block;margin-top:2px}
+/* ── Countdown ─────────────────────────────────────── */
+.countdown-wrap{display:none;flex-direction:column;align-items:center;gap:10px;z-index:1}
+.countdown-wrap.visible{display:flex}
+.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted2);font-family:'DM Mono',monospace;font-weight:500}
+.countdown-strip{display:flex;gap:10px;font-family:'DM Mono',monospace}
+.cd-unit{
+  position:relative;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:10px 14px;text-align:center;min-width:60px;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.06) inset
+}
+.cd-unit::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.25);z-index:2}
+.cd-val{
+  font-size:26px;font-weight:700;line-height:1;display:block;
+  color:#fff;letter-spacing:-.02em;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1),opacity .18s ease
+}
+.cd-val.flip{transform:translateY(-6px) scale(.9);opacity:0}
+.cd-lbl{font-size:9px;color:var(--muted2);letter-spacing:.1em;display:block;margin-top:4px;text-transform:uppercase}
+/* birthday-today state */
+.countdown-wrap.birthday-today .countdown-strip{display:none}
+.countdown-wrap.birthday-today .countdown-label{display:none}
+.birthday-today-msg{
+  display:none;font-size:clamp(14px,3vw,18px);font-weight:700;
+  text-align:center;letter-spacing:-.01em;
+  background:linear-gradient(90deg,var(--a),#fff,var(--a));
+  background-size:200% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 2s linear infinite;
+}
+.countdown-wrap.birthday-today .birthday-today-msg{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 /* Reactions */
 .reactions{display:flex;gap:8px;z-index:1;flex-wrap:wrap;justify-content:center}
 .reaction-btn{padding:6px 12px;border-radius:999px;font-size:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .15s var(--spring);user-select:none}
@@ -342,6 +371,12 @@ select.inp option{color:#111;background:#fff}
 @keyframes floatEmoji{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-80px) scale(1.4);opacity:0}}
 .float-emoji{position:fixed;pointer-events:none;font-size:28px;z-index:9998;animation:floatEmoji .9s ease forwards}
 @media(max-width:640px){.wrap{padding:12px 16px 90px}.panel{padding:16px}.topbar{padding:14px 18px}.status-pill{display:none}.brandTag{display:none}.form-card{padding:16px}}
+@media(max-width:480px){
+  .player-photo{width:min(260px,90vw)}
+  .cd-val{font-size:22px}
+  .cd-unit{padding:8px 10px;min-width:52px}
+  .countdown-strip{gap:7px}
+}
   </style>
 </head>
 <body>
@@ -630,6 +665,16 @@ select.inp option{color:#111;background:#fff}
             <img id="livePhoto" alt="photo" />
             <div class="ph-fallback">📸 Your Photo</div>
           </div>
+          <!-- Mini countdown in live preview -->
+          <div id="liveCountdown" style="display:none;flex-direction:column;align-items:center;gap:6px;z-index:1">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);font-family:'DM Mono',monospace" id="liveCountdownLabel"></div>
+            <div style="display:flex;gap:7px;font-family:'DM Mono',monospace">
+              <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px"><span style="font-size:16px;font-weight:700;display:block;line-height:1" id="lcdD">00</span><span style="font-size:8px;color:var(--muted2);display:block;margin-top:2px">Days</span></div>
+              <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px"><span style="font-size:16px;font-weight:700;display:block;line-height:1" id="lcdH">00</span><span style="font-size:8px;color:var(--muted2);display:block;margin-top:2px">Hrs</span></div>
+              <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px"><span style="font-size:16px;font-weight:700;display:block;line-height:1" id="lcdM">00</span><span style="font-size:8px;color:var(--muted2);display:block;margin-top:2px">Min</span></div>
+              <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:6px 9px;text-align:center;min-width:42px"><span style="font-size:16px;font-weight:700;display:block;line-height:1" id="lcdS">00</span><span style="font-size:8px;color:var(--muted2);display:block;margin-top:2px">Sec</span></div>
+            </div>
+          </div>
           <div class="decor-orbs">
             <div class="o o1"></div><div class="o o2"></div><div class="o o3"></div>
           </div>
@@ -667,11 +712,15 @@ select.inp option{color:#111;background:#fff}
           <img id="pPhoto" alt="photo" />
           <div class="ph-fallback">📸</div>
         </div>
-        <div class="countdown-strip" id="countdownStrip" style="display:none">
-          <div class="cd-unit"><span class="cd-val" id="cdD">00</span><span class="cd-lbl">DAYS</span></div>
-          <div class="cd-unit"><span class="cd-val" id="cdH">00</span><span class="cd-lbl">HRS</span></div>
-          <div class="cd-unit"><span class="cd-val" id="cdM">00</span><span class="cd-lbl">MIN</span></div>
-          <div class="cd-unit"><span class="cd-val" id="cdS">00</span><span class="cd-lbl">SEC</span></div>
+        <div class="countdown-wrap" id="countdownWrap">
+          <div class="countdown-label" id="countdownLabel">Countdown to Birthday</div>
+          <div class="countdown-strip" id="countdownStrip">
+            <div class="cd-unit"><span class="cd-val" id="cdD">00</span><span class="cd-lbl">Days</span></div>
+            <div class="cd-unit"><span class="cd-val" id="cdH">00</span><span class="cd-lbl">Hrs</span></div>
+            <div class="cd-unit"><span class="cd-val" id="cdM">00</span><span class="cd-lbl">Min</span></div>
+            <div class="cd-unit"><span class="cd-val" id="cdS">00</span><span class="cd-lbl">Sec</span></div>
+          </div>
+          <div class="birthday-today-msg">🎉 Today is the Big Day! 🎂</div>
         </div>
         <div class="reactions" id="reactions">
           <button class="reaction-btn" data-emoji="🎉">🎉<span class="r-count" id="rc0">0</span></button>
@@ -1402,6 +1451,37 @@ function buildThemeStrip(){
 }
 function updateCharCount(){const ta=$("msgInput"),cc=$("charCount");if(ta&&cc)cc.textContent=ta.value.length}
 function schedLive(){clearTimeout(liveDebounce);liveDebounce=setTimeout(updateLive,60)}
+
+let _liveCountdownTimer = null;
+function updateLiveCountdown(dateStr) {
+  const wrap = $("liveCountdown");
+  if (!wrap) return;
+  if (_liveCountdownTimer) { clearInterval(_liveCountdownTimer); _liveCountdownTimer = null; }
+  if (!dateStr) { wrap.style.display = "none"; return; }
+  function tick() {
+    const now = new Date();
+    const dob = new Date(dateStr);
+    const isBday = now.getMonth()===dob.getMonth() && now.getDate()===dob.getDate();
+    if (isBday) {
+      wrap.style.display = "flex";
+      const lbl = $("liveCountdownLabel");
+      if (lbl) lbl.textContent = "🎉 Today is the birthday!";
+      ["lcdD","lcdH","lcdM","lcdS"].forEach(id => { const e=$(id); if(e) e.textContent="🎂"; });
+      return;
+    }
+    const next = new Date(dob); next.setFullYear(now.getFullYear());
+    if (next < now) next.setFullYear(now.getFullYear()+1);
+    const diff = next - now;
+    const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);
+    wrap.style.display = "flex";
+    const lbl = $("liveCountdownLabel"); if (lbl) lbl.textContent = d===0?"Birthday tomorrow! 🎂":`${d}d until birthday 🎂`;
+    const set=(id,v)=>{const e=$(id);if(e)e.textContent=String(v).padStart(2,"0");};
+    set("lcdD",d); set("lcdH",h); set("lcdM",m); set("lcdS",s);
+  }
+  tick();
+  _liveCountdownTimer = setInterval(tick, 1000);
+}
+
 function updateLive(){
   const name=safeText($("nameInput")?.value||"Friend",32);
   const msg=safeText($("msgInput")?.value||"Wishing you a day full of joy, laughter, and love. Happy Birthday! 🎉",220);
@@ -1418,6 +1498,7 @@ function updateLive(){
   const ph=$("livePhoto"),fb=qs("#liveFrame .ph-fallback");
   if(uploadedPhotoUrl&&ph){ph.src=uploadedPhotoUrl;ph.style.display="block";if(fb)fb.style.display="none";}
   else if(ph){ph.removeAttribute("src");ph.style.display="none";if(fb)fb.style.display="block";}
+  updateLiveCountdown(date);
   syncSheet();
 }
 
@@ -1490,20 +1571,52 @@ function confetti(durationMs=2800){
   requestAnimationFrame(frame);
 }
 function startCountdown(dateStr){
-  const strip=$("countdownStrip"); if(!strip) return;
-  function tick(){
-    const now=new Date(),next=new Date(dateStr);
-    next.setFullYear(now.getFullYear());
-    if(next<now)next.setFullYear(now.getFullYear()+1);
-    const diff=next-now;
-    const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);
-    if(diff<864e5*30){
-      strip.style.display="";
-      $("cdD").textContent=String(d).padStart(2,"0");$("cdH").textContent=String(h).padStart(2,"0");
-      $("cdM").textContent=String(m).padStart(2,"0");$("cdS").textContent=String(s).padStart(2,"0");
-    } else strip.style.display="none";
+  const wrap=$("countdownWrap"); if(!wrap) return;
+  const label=$("countdownLabel");
+
+  /* Animate a value change with a flip */
+  function setVal(el, newVal) {
+    if (!el) return;
+    if (el.textContent === newVal) return;
+    el.classList.add("flip");
+    setTimeout(() => {
+      el.textContent = newVal;
+      el.classList.remove("flip");
+    }, 120);
   }
-  tick();setInterval(tick,1000);
+
+  function tick(){
+    const now = new Date();
+    const dob = new Date(dateStr);
+    const nextBirthday = new Date(dob);
+    nextBirthday.setFullYear(now.getFullYear());
+    if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear()+1);
+
+    /* Check if today IS the birthday */
+    const isBday = now.getMonth()===dob.getMonth() && now.getDate()===dob.getDate();
+    if (isBday) {
+      wrap.classList.add("visible","birthday-today");
+      return;
+    }
+
+    wrap.classList.add("visible");
+    wrap.classList.remove("birthday-today");
+
+    const diff = nextBirthday - now;
+    const d = Math.floor(diff/864e5);
+    const h = Math.floor((diff%864e5)/36e5);
+    const m = Math.floor((diff%36e5)/6e4);
+    const s = Math.floor((diff%6e4)/1e3);
+
+    if (label) label.textContent = d === 0 ? "Birthday is Tomorrow! 🎂" : d === 1 ? "1 day to go 🎂" : `${d} days until birthday 🎂`;
+
+    setVal($("cdD"), String(d).padStart(2,"0"));
+    setVal($("cdH"), String(h).padStart(2,"0"));
+    setVal($("cdM"), String(m).padStart(2,"0"));
+    setVal($("cdS"), String(s).padStart(2,"0"));
+  }
+  tick();
+  setInterval(tick,1000);
 }
 function floatEmoji(emoji,x,y){
   const el=document.createElement("div");el.className="float-emoji";el.textContent=emoji;
@@ -1519,7 +1632,7 @@ function renderPlayer(payload){
     $("playerHero")?.style.setProperty("display","none");
     qs(".player-photo")?.style.setProperty("display","none");
     $("reactions")?.style.setProperty("display","none");
-    $("countdownStrip")?.style.setProperty("display","none");
+    $("countdownWrap")?.style.setProperty("display","none");
     qs(".player-cta")?.style.setProperty("display","none");
     document.title = "Wish Expired — WishCraft";
     const themeId = payload.theme || "bronzenoir";
