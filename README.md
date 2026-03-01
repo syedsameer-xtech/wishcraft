@@ -1,250 +1,240 @@
-# 🎂 WishCraft
+# 🎂 WishCraft — Birthday Wish Link + QR Generator
 
 <div align="center">
 
-### ✨ Premium Birthday Wish Link + QR Generator  
-Create beautiful, shareable birthday wishes in seconds —  
-**No backend. No signup. Just magic.**
+### Create beautiful, personalised birthday wish pages  
+**Photo • Themes • Countdown • QR Code • Compressed Share Link**
 
-[🌐 Try It Live](https://wishcraft.live)  
-⭐ Star this repo if you love it!
+No backend. No database. No build tools.  
+Just pure front-end magic.
+
+<br>
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Now-b38f6f?style=for-the-badge&logo=github)](https://syedsameer-xtech.github.io/wishcraft/)
+[![GitHub Stars](https://img.shields.io/github/stars/syedsameer-xtech/wishcraft?style=for-the-badge&color=b38f6f)](https://github.com/syedsameer-xtech/wishcraft/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
+[![Zero Dependencies](https://img.shields.io/badge/No%20Build-Zero%20Dependencies-3ecf8e?style=for-the-badge)](#)
 
 </div>
 
 ---
 
-## 🚀 What is WishCraft?
+## ✨ What Is WishCraft?
 
-**WishCraft** is a lightweight, fully client-side web app that lets you create stunning birthday wish pages and share them instantly via:
+WishCraft is a fully static web app that lets you generate **shareable birthday wish pages** with:
 
-- 🔗 Shareable Link  
-- 📱 QR Code  
-- 📤 Native Share  
+- 🎨 Elegant themes  
+- 📸 Photo upload (Cloudinary CDN)  
+- 🎉 Animations & confetti  
+- ⏱️ Live countdown  
+- 📱 Styled QR codes  
+- 🔗 Compressed URL-based sharing  
 
-No database. No accounts. No tracking.  
-Everything is encoded directly into the URL.
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|----------|-------------|
-| 🎨 Themes | 4 beautiful layouts: Glow, Minimal, Split, Poster |
-| 🔤 Fonts | Poppins, Montserrat, Playfair & more |
-| 🌈 Effects | Glow, Sparkle, Neon, Glass animations |
-| 🖼️ Photo Upload | Upload image (Cloudinary CDN hosted) |
-| 📱 QR Code | Auto-generated, themed, downloadable QR |
-| 🎊 Confetti | Celebration animation on open |
-| 🔗 Shareable Link | All data encoded in URL hash |
-| 📤 One-Click Share | Copy link or share natively |
+All wish data is encoded directly in the **URL hash fragment**.  
+No server stores your content. No accounts required.
 
 ---
 
-## 🎯 Quick Start
-
-### 🌐 Option 1: Use Online (Easiest)
-
-1. Visit 👉 https://wishcraft.live  
-2. Enter name & message  
-3. Pick a theme  
-4. Click **Generate Link + QR**  
-5. Share the magic 🎉  
-
----
-
-### 💻 Option 2: Run Locally
-
-```bash
-# Clone the repository
-git clone https://github.com/syedsameer-xtech/wishcraft.git
-
-# Open project
-cd wishcraft
-
-# Open in browser
-open index.html
-```
-
-Or simply double-click `index.html`.
-
----
-
-### 🚀 Option 3: Deploy via GitHub Pages
-
-1. Fork this repo  
-2. Go to **Settings → Pages**  
-3. Set Source to: `main` branch / root folder  
-4. Save  
-
-Your site will be live at:
+# ⚙️ How It Works
 
 ```
-https://yourusername.github.io/wishcraft/
-```
-
----
-
-## 📝 How It Works
-
-WishCraft uses a simple but powerful flow:
-
-```
-User Input → JSON → Base64 Encode → URL Hash → Shareable Link
+User Input
+   ↓
+Strip defaults & shorten keys
+   ↓
+JSON stringify
+   ↓
+LZW compression
+   ↓
+Base64-URL encode
+   ↓
+Stored in #w= hash fragment
 ```
 
 Example:
 
 ```
-https://yoursite.com/#wish=eyJuYW1lIjoiQWxpY2UiLCJtc2ciOiJIYXBweSBCaXJ0aGRheSEifQ==
+https://your-site.com/wishcraft/#w=zAB3xFg...
 ```
 
-When opened:
+Because it uses the URL hash:
 
-- Browser reads `#wish=` hash  
-- Decodes Base64 data  
-- Applies theme, font & effects  
-- Loads image (if included)  
-- Plays confetti 🎊  
-- Displays the wish  
-
-✅ No server  
-✅ No database  
-✅ No stored data  
-✅ 100% client-side  
+- ✅ No database  
+- ✅ No backend  
+- ✅ No cookies  
+- ✅ No tracking  
+- ✅ Works on any static host  
 
 ---
 
-## 🖼️ Photo Upload
+# 🎨 Feature Overview
 
-- Max Size: **4MB**
-- Formats: JPG, PNG, WebP
-- Hosted via **Cloudinary CDN**
-- Not stored on WishCraft servers
+## 🛠 Builder
 
-💡 Tip: Use square images for best layout results.
-
----
-
-## 🎨 Themes
-
-| Theme | Best For |
-|-------|----------|
-| Premium Glow | Elegant celebration wishes |
-| Centered Minimal | Clean, modern style |
-| Split Photo | Message + image layout |
-| Bold Poster | Big, impactful announcements |
+| Category | Details |
+|----------|----------|
+| 🎨 20 Themes | Bronze Noir, Velvet Rose, Midnight Violet & more |
+| 🖋️ 9 Fonts | Poppins, Cinzel, Pacifico, Playfair & more |
+| 🗂️ 5 Layouts | Glow, Minimal, Split Photo, Poster, Photo First |
+| ✨ 6 Effects | Glow, Neon, Glass, Aurora, Sparkle, Cinematic |
+| 🎬 6 Animations | Fade, Slide, Zoom, Bounce, Float, Typewriter |
+| 📸 Photo Upload | Cloudinary integration |
+| 💬 Templates | Heartfelt, Funny, Professional, Poetic |
+| 🔴 Live Preview | Instant preview while typing |
+| ⏳ Expiry | Optional link expiration |
 
 ---
 
-## ❓ Troubleshooting
+## 📱 QR Code System
 
-| Issue | Solution |
-|-------|----------|
-| QR not showing | Check internet (QR API required) |
-| Upload fails | Ensure image < 4MB |
-| Link too long | Shorten message or image size |
-| Share button missing | Use "Copy Link" |
-| Confetti not playing | Refresh page |
-
----
-
-## 🔐 Privacy & Security
-
-- 🔒 No database  
-- 🍪 No cookies  
-- 🌐 No backend  
-- 🗑️ No logs  
-- 🚫 No tracking  
-
-All content lives inside your URL.
-
-You are responsible for the content you create and share.
+| Feature | Description |
+|----------|-------------|
+| ✅ Fully scannable | Direct QR matrix access (not pixel sampling) |
+| 🎨 4 Styles | Square, Rounded, Dots, Logo overlay |
+| 🔒 Smart contrast | Ensures ≥ 4:1 scanner-safe ratio |
+| 🔏 ECC Level H | 30% error correction for logo mode |
+| ⬇️ Export | PNG download + Clipboard + Web Share |
 
 ---
 
-## 🛠️ For Developers
+## 🎉 Recipient Experience
 
-### 📁 Project Structure
+| Feature | Description |
+|----------|-------------|
+| ⏱️ Countdown | Animated live flip timer |
+| 🎂 Birthday Mode | Special shimmer effect on the day |
+| 🎊 Confetti | Canvas particle animation |
+| 💬 Emoji Reactions | Stored locally in browser |
+| ⛶ Fullscreen Mode | One-tap immersive view |
+| 🔔 Expiry Notice | Warning if link is expiring |
+
+---
+
+# 🚀 Deploy in 60 Seconds
+
+## GitHub Pages
+
+1. Fork this repository  
+2. Go to **Settings → Pages**  
+3. Select `main` branch / root  
+4. Done  
+
+Your site:
+```
+https://your-username.github.io/wishcraft/
+```
+
+---
+
+## Works On
+
+- Netlify (drag & drop)
+- Vercel
+- Cloudflare Pages
+- Any Apache/Nginx server
+- Even local `index.html`
+
+No `npm install`.  
+No bundlers.  
+No frameworks.
+
+---
+
+# 🏗️ Project Structure
 
 ```
 wishcraft/
-├── index.html
-├── style.css
-├── script.js
-├── Logo_0.png
-└── README.md
+├── index.html        # Main structure
+├── style.css         # Themes, layouts, animations
+├── script.js         # Compression, QR logic, builder, countdown
+├── Logo_0.png        # App logo
+└── README.md         # Documentation
 ```
 
-### ⚙️ Built With
-
-- Vanilla JavaScript
-- CSS Variables
-- Canvas API (Confetti)
-- Cloudinary API (Image Upload)
-- QRServer API (QR Generation)
+The project is modular but remains fully static.
 
 ---
 
-## 🤝 Contributing
+# 🔒 Privacy & Data Model
 
-1. Fork the repo  
-2. Create a branch  
-   ```
-   git checkout -b feature/your-feature
-   ```
-3. Commit changes  
-   ```
-   git commit -m "✨ Add feature"
-   ```
-4. Push & open a Pull Request  
-
-Ideas welcome!
+- All wish data lives in the URL hash
+- Hash fragments are never sent to servers
+- No backend logging
+- No cookies
+- No analytics
+- Reaction counts stored in localStorage only
 
 ---
 
-## 🗺️ Coming Soon
+# ♿ Accessibility
 
-- 🎵 Background music
-- ⏱️ Birthday countdown timer
-- 🖼️ Export wish as image
-- 🌍 Multi-language support
-- 💾 Save design as JSON
-
-Have an idea? Open an issue 💡
+- `prefers-reduced-motion` supported
+- Keyboard navigation for all controls
+- ARIA roles for UI elements
+- High-contrast QR rendering
+- Focus-visible styling
 
 ---
 
-## 🙏 Credits
+# 🛠 Configuration (Cloudinary)
 
-Built with ❤️ using modern web standards  
+Inside `script.js`, update:
 
-- Fonts via Google Fonts  
-- QR via QRServer API  
-- Image hosting via Cloudinary  
+```js
+const CLOUDINARY_CLOUD  = "your_cloud_name";
+const CLOUDINARY_PRESET = "your_preset_name";
+```
 
----
-
-## 👨‍💻 Creator
-
-Designed & Developed by **Syed Sameer**
-
-Made with ❤️ by **ChatGPT**  
-Prompted by **Syed Sameer**
+Create a free account at cloudinary.com and generate an unsigned upload preset.
 
 ---
 
-## 📜 License
+# 🧠 Why This Project Stands Out
 
-MIT License — Free for personal and educational use.
+- Zero-backend architecture
+- Custom LZW compression implementation
+- Advanced QR styling with guaranteed scannability
+- Fully static but feature-rich
+- Clean modular separation (HTML/CSS/JS)
+- Production-ready without build tools
 
-See the LICENSE file for full details.
+---
+
+# 🤝 Contributing
+
+Ideas welcome:
+
+- WhatsApp share integration
+- Additional QR styles
+- Background music support
+- Short URL serverless version
+- Dark/light UI toggle
+
+Open an issue or submit a PR.
+
+---
+
+# 📜 License
+
+MIT — Free for personal & commercial use.
+
+---
+
+# 👨‍💻 Author
+
+Built & Designed by **Syed Sameer**
+
+---
+
+## 🤖 AI Assistance
+
+Developed with assistance from **Claude** and **ChatGPT**
 
 ---
 
 <div align="center">
 
-⭐ Star this repository if you loved WishCraft!  
-🎂 Spread happiness. Share beautifully.
+Made with ❤️ by Syed Sameer  
+⭐ Star the repo if you love WishCraft!
 
 </div>
